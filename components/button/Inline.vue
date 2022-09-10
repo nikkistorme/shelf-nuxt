@@ -24,6 +24,7 @@ export default {
 .inline-button {
   display: inline;
   height: min-content;
+  width: fit-content;
   padding: 0;
   border: none;
   background: none;

@@ -6,7 +6,7 @@
       :type="type"
       @click="clickAction"
     >
-      {{ text }}
+      <slot />
     </button>
   </div>
 </template>

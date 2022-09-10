@@ -292,7 +292,7 @@ export default {
 .c100 > span {
   position: absolute;
   width: 100%;
-  z-index: 1;
+  z-index: var(--z-index-progress-circle);
   left: 0;
   top: 0;
   width: 3.5em;

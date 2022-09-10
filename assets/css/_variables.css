@@ -46,8 +46,11 @@
 
   --header-height: 70px;
 
-  --z-index-full-page-loader: 10;
-  --z-index-full-page-loader-icon: 11;
+  --z-index-progress-circle: 1;
+  --z-index-modal-backdrop: calc(var(--z-index-progress-circle) + 1);
+  --z-index-modal: calc(var(--z-index-modal-backdrop) + 1);
+  --z-index-full-page-loader: calc(var(--z-index-modal) + 1);
+  --z-index-full-page-loader-icon: calc(var(--z-index-full-page-loader) + 1);
 }
 
 @media (min-width: 768px) {

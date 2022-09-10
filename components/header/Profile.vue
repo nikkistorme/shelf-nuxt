@@ -15,7 +15,7 @@
     </div>
     <div
       class="header-profile-dropdown dropdown-modal-menu flex-column"
-      :class="{ open: modalStore.headerDropdown }"
+      :class="{ open: showDropdown }"
     >
       <div v-if="userStore?.profile?.id" class="d-flex flex-column p-1">
         <NuxtLink to="/account" @click="toggleDropdown">Account</NuxtLink>
@@ -23,13 +23,14 @@
         <ButtonInline text="Sign out" @click="signOut" />
       </div>
       <div v-else class="d-flex flex-column p-1">
-        <NuxtLink to="/">Sign in</NuxtLink>
+        <NuxtLink to="/" @click="toggleDropdown">Sign in</NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
 import { useModalStore } from "~/store/ModalStore";
 import { useUserStore } from "~/store/UserStore";
 
@@ -38,15 +39,25 @@ export default {
     const userStore = useUserStore();
 
     // Account info dropdown
+    const showDropdown = ref(false);
     const modalStore = useModalStore();
 
     function toggleDropdown() {
-      if (modalStore.headerDropdown) {
-        modalStore.closeAllModals();
+      if (showDropdown.value) {
+        showDropdown.value = false;
+        modalStore.closeModal();
       } else {
-        modalStore.openHeaderDropdown();
+        showDropdown.value = true;
+        modalStore.openModal();
       }
     }
+
+    const { modal } = storeToRefs(modalStore);
+    watch(modal, (newValue) => {
+      if (!newValue) {
+        showDropdown.value = false;
+      }
+    });
 
     // Sign Out
     function signOut() {
@@ -56,7 +67,7 @@ export default {
 
     return {
       userStore,
-      modalStore,
+      showDropdown,
       toggleDropdown,
       signOut,
     };

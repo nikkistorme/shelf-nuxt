@@ -5,17 +5,12 @@
     :disabled="disabled"
     :type="type"
   >
-    <StopwatchIcon />
+    <IconStopwatch />
   </button>
 </template>
 
 <script>
-import StopwatchIcon from "../icons/StopwatchIcon.vue";
-
 export default {
-  components: {
-    StopwatchIcon,
-  },
   props: {
     color: { type: String, default: "blue" },
     disabled: { type: Boolean, default: false },

@@ -9,11 +9,11 @@
     </div>
     <div
       class="mobile-navigation__dropdown dropdown-modal-menu flex-column"
-      :class="{ open: modalStore.headerDropdown }"
+      :class="{ open: showDropdown }"
     >
       <div class="d-flex flex-column gap-1 p-1">
         <NuxtLink to="/home" @click="toggleDropdown">Home</NuxtLink>
-        <NuxtLink to="/library" @click="toggleDropdown">Library</NuxtLink>
+        <NuxtLink to="/shelves" @click="toggleDropdown">Library</NuxtLink>
         <NuxtLink to="/account" @click="toggleDropdown">Account</NuxtLink>
         <NuxtLink to="https://trello.com/b/HG9elwZ0/roadmap" target="_blank">
           Roadmap
@@ -26,29 +26,42 @@
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
 import { useModalStore } from "~/store/ModalStore";
 import { useUserStore } from "~/store/userStore";
 
 export default {
   setup() {
+    // Account info dropdown
     const modalStore = useModalStore();
-    const userStore = useUserStore();
 
+    const showDropdown = ref(false);
     function toggleDropdown() {
-      if (modalStore.headerDropdown) {
-        modalStore.closeAllModals();
+      if (showDropdown.value) {
+        showDropdown.value = false;
+        modalStore.closeModal();
       } else {
-        modalStore.openHeaderDropdown();
+        showDropdown.value = true;
+        modalStore.openModal();
       }
     }
 
+    const { modal } = storeToRefs(modalStore);
+    watch(modal, (newValue) => {
+      if (!newValue) {
+        showDropdown.value = false;
+      }
+    });
+
+    // Sign Out
+    const userStore = useUserStore();
     function signOut() {
       modalStore.closeAllModals();
       userStore.signOut();
     }
 
     return {
-      modalStore,
+      showDropdown,
       toggleDropdown,
       signOut,
     };

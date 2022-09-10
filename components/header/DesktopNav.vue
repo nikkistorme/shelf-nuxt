@@ -2,8 +2,8 @@
   <nav class="header-nav d-flex ai-center mr-2">
     <ul class="nav-list d-flex gap-1">
       <li class="nav-list-item"><NuxtLink to="/home">Home</NuxtLink></li>
-      <li v-if="userStore?.profile?.id" class="nav-list-item">
-        <NuxtLink to="/library">Library</NuxtLink>
+      <li v-if="profile?.id" class="nav-list-item">
+        <NuxtLink to="/shelves">Library</NuxtLink>
       </li>
       <li class="nav-list-item">
         <NuxtLink href="https://trello.com/b/HG9elwZ0/roadmap" target="_blank">
@@ -15,13 +15,15 @@
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
 import { useUserStore } from "~~/store/userStore";
 
 export default {
   setup() {
     const userStore = useUserStore();
+    const { profile } = storeToRefs(userStore);
     return {
-      userStore,
+      profile,
     };
   },
 };

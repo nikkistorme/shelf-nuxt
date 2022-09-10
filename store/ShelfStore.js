@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import {
   fetchShelves,
-  fetchShelf,
+  fetchBooksForShelf,
   updateShelfSort,
 } from "~~/services/shelfService";
+import { useBookStore } from "./BookStore";
 
 export const useShelfStore = defineStore("ShelfStore", {
   state: () => ({
@@ -16,22 +17,37 @@ export const useShelfStore = defineStore("ShelfStore", {
       return this.shelves.find((shelf) => shelf.in_progress_shelf);
     },
     getAllBooksShelf() {
-      return this.shelves.find((shelf) => shelf.all_books_shelf);
+      return this.shelves.find((shelf) => shelf?.all_books_shelf);
     },
-    getShelfById(id) {
-      return this.shelves.find((shelf) => shelf.id === id);
+    getShelfById() {
+      return (id) => this.shelves.find((shelf) => shelf.id === id);
     },
   },
   actions: {
     async fetchShelves() {
       this.loading = true;
+      let shelves;
       try {
-        const shelves = await fetchShelves();
-        this.shelves = shelves;
+        shelves = await fetchShelves();
       } catch (error) {
         this.loading = false;
         throw error;
       }
+      this.shelves = shelves;
+      this.loading = false;
+    },
+    async setActiveShelf(shelf) {
+      const bookStore = useBookStore();
+      this.loading = true;
+      this.activeShelf = shelf;
+      let userBooks;
+      try {
+        userBooks = await fetchBooksForShelf(shelf);
+      } catch (error) {
+        this.loading = false;
+        throw error;
+      }
+      bookStore.userBooks = userBooks;
       this.loading = false;
     },
     async updateShelfSort(shelf) {
@@ -43,17 +59,16 @@ export const useShelfStore = defineStore("ShelfStore", {
         throw error;
       }
     },
-    async setActiveShelf(shelf_id) {
-      this.loading = true;
-      try {
-        const shelf = await fetchShelf(shelf_id);
-        this.activeShelf = shelf;
-        console.log("🚀 ~ this.activeShelf", this.activeShelf);
-      } catch (error) {
-        this.loading = false;
-        throw error;
-      }
-      this.loading = false;
-    },
+    // async setActiveShelf(shelf_id) {
+    //   this.loading = true;
+    //   try {
+    //     const shelf = await fetchShelf(shelf_id);
+    //     this.activeShelf = shelf;
+    //   } catch (error) {
+    //     this.loading = false;
+    //     throw error;
+    //   }
+    //   this.loading = false;
+    // },
   },
 });

@@ -30,14 +30,7 @@ export default {
     const router = useRouter();
 
     async function viewBookDetails() {
-      console.log("🚀 ~ props.book", props.book);
-      // TODO: link to book page
-      // await router.push({
-      //   name: "book",
-      //   params: {
-      //     id: props.book.id,
-      //   },
-      // });
+      await router.push(`/books/${props.book.base}`);
     }
     return {
       router,
@@ -53,11 +46,12 @@ export default {
   border-radius: 5px;
   object-fit: contain;
   object-position: bottom;
+  box-shadow: var(--box-shadow-2);
 }
 .home.shelved-book__cover {
   height: 250px;
   max-width: 400px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .home.shelved-book__cover img {
   height: 100%;

@@ -37,6 +37,11 @@
   -webkit-align-items: flex-end;
 }
 
+.ai-baseline {
+  align-items: baseline;
+  -webkit-align-items: baseline;
+}
+
 .jc-center {
   justify-content: center;
   -webkit-justify-content: center;

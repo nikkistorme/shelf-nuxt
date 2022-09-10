@@ -1,6 +1,6 @@
 <template>
-  <div class="book-page__title d-flex ai-center gap-1 mb-1">
-    <h2>{{ props.book.title }}</h2>
+  <div class="book-page__title">
+    <h1>{{ props.book.title }}</h1>
   </div>
 </template>
 

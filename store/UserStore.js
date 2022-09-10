@@ -8,7 +8,7 @@ import {
 
 export const useUserStore = defineStore("UserStore", {
   state: () => ({
-    profile: {},
+    profile: null,
     loading: false,
   }),
   actions: {

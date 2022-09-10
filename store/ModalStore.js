@@ -4,24 +4,19 @@ export const useModalStore = defineStore({
   id: "ModalStore",
   state: () => ({
     backdrop: false,
-    headerDropdown: false,
+    modal: false,
   }),
-  getters: {
-    showBackdrop() {
-      return this.backdrop;
-    },
-  },
   actions: {
-    openHeaderDropdown() {
+    openModal() {
       this.backdrop = true;
-      this.headerDropdown = true;
+      this.modal = true;
     },
-    closeHeaderDropdown() {
-      this.headerDropdown = false;
+    closeModal() {
+      this.modal = false;
       this.backdrop = false;
     },
     closeAllModals() {
-      this.headerDropdown = false;
+      this.modal = false;
       this.backdrop = false;
     },
   },

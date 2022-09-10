@@ -7,5 +7,4 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (id) {
     await bookStore.fetchBook(id);
   }
-  // TODO: if id is connected to one of the user's books, fetch that userBook too
 })

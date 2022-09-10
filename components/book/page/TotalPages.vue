@@ -1,7 +1,7 @@
 <template>
-  <div class="book-page__pages pencil-hover-container d-flex flex-column mb-1">
+  <div class="book-page__pages pencil-hover-container d-flex flex-column">
     <div class="d-flex gap-1">
-      <p>{{ book.pages }} pages</p>
+      <p>{{ book.total_pages }} pages</p>
       <!-- <EditPencil
         v-show="editingField !== 'totalPages'"
         @click="editField('totalPages')"

@@ -1,40 +1,71 @@
 import { defineStore } from "pinia";
-// import changeService from "~/services/changeService.js";
-import { fetchUserBooks, fetchBook } from "~/services/bookService";
+
+import {
+  addBookToLibrary,
+  fetchUserBooks,
+  fetchBook,
+  startReadingBook,
+  updateProgress,
+  updateUserBook,
+  removeBookFromLibrary,
+} from "~/services/bookService";
 
 export const useBookStore = defineStore("BookStore", {
   state: () => ({
-    books: [],
-    book: {},
+    userBooks: [],
+    book: null,
+    userBook: {},
     loading: false,
   }),
   getters: {
     inProgressBooks() {
-      return this.books.filter((book) => book.in_progress);
+      return this.userBooks.filter((book) => book.in_progress);
     },
     getBookById(id) {
-      return this.books.find((book) => book.id === id);
+      return this.userBooks.find((book) => book.id === id);
     },
-    getBooksOnShelf(shelf) {
-      if (shelf.all_books_shelf) {
-        return this.books;
-      } else if (shelf.finished_shelf) {
-        return this.books.filter((book) => book.finished);
-      } else if (shelf.in_progress_shelf) {
-        return this.books.filter((book) => book.inProgress);
-      } else if (shelf.unread_shelf) {
-        return this.books.filter((book) => !book.finished && !book.inProgress);
-      } else {
-        return this.books.filter((book) => book.shelves.includes(shelf.id));
-      }
+    getUserBooksOnShelf() {
+      return (shelf) => {
+        if (shelf?.all_books_shelf) {
+          return this.userBooks;
+        } else if (shelf.finished_shelf) {
+          return this.userBooks.filter((book) => book.finished);
+        } else if (shelf.in_progress_shelf) {
+          return this.userBooks.filter((book) => book.inProgress);
+        } else if (shelf.unread_shelf) {
+          return this.userBooks.filter(
+            (book) => !book.finished && !book.inProgress
+          );
+        } else {
+          return this.userBooks.filter((book) =>
+            book.shelves?.includes(shelf.id)
+          );
+        }
+      };
     },
   },
   actions: {
-    async fetchBooks() {
+    async addBookToLibrary(book = null) {
+      this.loading = true;
+      if (!book?.id) {
+        book = this.book;
+      }
+      let userBook;
+      try {
+        userBook = await addBookToLibrary(book);
+      } catch (error) {
+        this.loading = false;
+        throw error;
+      }
+      this.userBook = userBook;
+      this.userBooks.push(userBook);
+      this.loading = false;
+    },
+    async fetchUserBooks() {
       this.loading = true;
       try {
         const books = await fetchUserBooks();
-        this.books = books;
+        this.userBooks = books;
       } catch (error) {
         this.loading = false;
         throw error;
@@ -42,102 +73,100 @@ export const useBookStore = defineStore("BookStore", {
       this.loading = false;
     },
     async fetchBook(book_id) {
+      console.log("begin fetchBook");
       this.loading = true;
       try {
-        const book = await fetchBook(book_id);
+        const { book, userBook } = await fetchBook(book_id);
         this.book = book;
+        if (userBook?.base === book.id) this.userBook = userBook;
+      } catch (error) {
+        this.loading = false;
+        console.log("error fetchBook", error);
+        throw error;
+      }
+      this.loading = false;
+      console.log("end fetchBook");
+    },
+    async startReadingBook(user_book) {
+      this.loading = true;
+      let updatedBook = {};
+      try {
+        updatedBook = await startReadingBook(user_book);
       } catch (error) {
         this.loading = false;
         throw error;
       }
+      if (updatedBook?.id) this.userBook = updatedBook;
       this.loading = false;
     },
-    // async addBookToLibrary(book) {
-    //   this.loading = true;
-    //   try {
-    //     let newBook = bookService.newBookObject(book, state.user.uid);
-    //     await bookService.addBook(newBook);
-    //     this.books.push(newBook);
-    //     this.loading = false;
-    //     return newBook;
-    //   } catch (error) {
-    //     console.log("🚀 ~ error", error);
-    //     throw error;
-    //   }
-    // },
-    // async getBook(id) {
-    //   this.loading = true;
-    //   // await fetch("https://icy-flower-8c91.nikkistorme.workers.dev");
-    //   let detailedBook = {};
-    //   try {
-    //     detailedBook = await bookService.getBook(id);
-    //     if (!detailedBook.changes) {
-    //       detailedBook.changes = [];
-    //     }
-    //     const shelves = state.shelves;
-    //     let staleShelfIds = [];
-    //     detailedBook.shelves.forEach((shelfId) => {
-    //       const shelfInStore = shelves.find((s) => s.id === shelfId);
-    //       if (!shelfInStore) {
-    //         staleShelfIds.push(shelfId);
-    //       }
-    //     });
-    //     if (staleShelfIds.length > 0) {
-    //       console.log("🚀 ~ staleShelfIds", staleShelfIds);
-    //       detailedBook.shelves = detailedBook.shelves.filter((shelfId) => {
-    //         return !staleShelfIds.includes(shelfId);
-    //       });
-    //       await bookService.updateBookShelves(detailedBook);
-    //     }
-    //   } catch (error) {
-    //     console.log("🚀 ~ error", error);
-    //     throw error;
-    //   }
-    //   console.log("🚀 ~ detailedBook", detailedBook);
-    //   this.books = this.books.filter((book) => book.id !== id);
-    //   this.books.push(detailedBook);
-    //   this.book = detailedBook;
-    //   this.loading = false;
-    // },
-    // async updatePage(bookAndChange) {
-    //   this.loading = true;
-    //   try {
-    //     bookAndChange.book.readPages = bookAndChange.change.payload.newValue;
-    //     bookAndChange.book = changeService.addChangeToBook(
-    //       bookAndChange.book,
-    //       bookAndChange.change
-    //     );
-    //     await bookService.updatePage(bookAndChange.book);
-    //   } catch (error) {
-    //     console.log(error);
-    //     throw error;
-    //   }
-    //   this.books = this.books.filter(
-    //     (book) => book.id !== bookAndChange.book.id
-    //   );
-    //   this.books.push(bookAndChange.book);
-    //   this.book = bookAndChange.book;
-    //   this.loading = false;
-    // },
-    // async setGoal(bookAndChange) {
-    //   this.loading = true;
-    //   try {
-    //     bookAndChange.book.goal = bookAndChange.change.fields.goal;
-    //     bookAndChange.book = changeService.addChangeToBook(
-    //       bookAndChange.book,
-    //       bookAndChange.change
-    //     );
-    //     await bookService.setGoal(bookAndChange.book);
-    //   } catch (error) {
-    //     console.log(error);
-    //     throw error;
-    //   }
-    //   this.books = this.books.filter(
-    //     (book) => book.id !== bookAndChange.book.id
-    //   );
-    //   this.books.push(bookAndChange.book);
-    //   this.book = bookAndChange.book;
-    //   this.loading = true;
-    // },
+    async updateProgress(user_book_id, book_updates) {
+      this.loading = true;
+      let updatedBook;
+      try {
+        updatedBook = await updateProgress(user_book_id, book_updates);
+      } catch (error) {
+        throw error;
+      }
+      if (updatedBook?.id) this.userBook = updatedBook;
+      this.loading = false;
+    },
+    async setGoal(user_book_id, book_updates) {
+      this.loading = true;
+      let updatedBook;
+      try {
+        updatedBook = await updateUserBook(user_book_id, book_updates);
+      } catch (error) {
+        throw error;
+      }
+      if (updatedBook?.id) this.userBook = updatedBook;
+      this.loading = false;
+    },
+    async finishReadingBook(user_book_id, book_updates) {
+      this.loading = true;
+      let updatedBook;
+      try {
+        updatedBook = await updateUserBook(user_book_id, book_updates);
+      } catch (error) {
+        throw error;
+      }
+      if (updatedBook?.id) this.userBook = updatedBook;
+      this.loading = false;
+    },
+    async uploadNewCoverImage(user_book_id, book_updates) {
+      this.loading = true;
+      let updatedBook;
+      try {
+        updatedBook = await updateUserBook(user_book_id, book_updates);
+      } catch (error) {
+        throw error;
+      }
+      if (updatedBook?.id) this.userBook = updatedBook;
+      this.loading = false;
+    },
+    async updateUserBook(user_book_id, book_updates) {
+      this.loading = true;
+      let updatedBook;
+      try {
+        updatedBook = await updateUserBook(user_book_id, book_updates);
+      } catch (error) {
+        throw error;
+      }
+      if (updatedBook?.id) this.userBook = updatedBook;
+      this.loading = false;
+    },
+    async removeBookFromLibrary(book_id = null) {
+      this.loading = true;
+      if (!book_id) {
+        book_id = this.userBook.id;
+      }
+      try {
+        await removeBookFromLibrary(book_id);
+      } catch (error) {
+        this.loading = false;
+        throw error;
+      }
+      this.userBook = {};
+      this.loading = false;
+    },
   },
 });

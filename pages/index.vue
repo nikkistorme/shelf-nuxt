@@ -123,20 +123,20 @@ export default {
         class="login-page__form d-flex flex-column ai-center w-100"
         @submit.prevent="submitForm"
       >
-        <FormsDefaultInput
+        <InputDefault
           v-show="activeForm === 'sign-up'"
           id="name"
           v-model="credentials.name"
           type="text"
           label="Name"
         />
-        <FormsDefaultInput
+        <InputDefault
           id="email"
           v-model="credentials.email"
           type="email"
           label="Email"
         />
-        <FormsPasswordInput
+        <InputPassword
           v-if="activeForm !== 'password-reset'"
           id="password"
           v-model="credentials.password"
@@ -151,11 +151,9 @@ export default {
           </ul>
         </div>
         <div class="d-flex jc-space-between w-100 my-1">
-          <ButtonDefault
-            :text="submitButtonText"
-            :disabled="disableForm"
-            type="submit"
-          />
+          <ButtonDefault :disabled="disableForm" type="submit">
+            {{ submitButtonText }}
+          </ButtonDefault>
           <ButtonInline
             v-if="activeForm !== 'password-reset'"
             text="Forgot password?"

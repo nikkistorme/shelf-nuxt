@@ -9,11 +9,11 @@
       />
     </div>
     <div class="home-shelf__floor d-flex jc-space-between w-100">
-      <h5 class="home-shelf__name" @click="shelfStore.setActiveShelf(shelf.id)">
-        <NuxtLink to="/library">{{ shelf.name }}</NuxtLink>
+      <h5 class="home-shelf__name" @click="shelfStore.setActiveShelf(shelf)">
+        <NuxtLink to="/shelves">{{ shelf.name }}</NuxtLink>
       </h5>
       <div v-if="shelf.sort" class="home-shelf__sort d-flex ai-center">
-        <FormsSelectInput
+        <InputSelect
           :id="`shelf-sort__${shelf.id}`"
           v-model="shelf.sort.method"
           class="home-shelf__sort-method"

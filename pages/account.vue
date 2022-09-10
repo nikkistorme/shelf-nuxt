@@ -23,23 +23,21 @@
           class="account-page__password-reset-form d-flex flex-column gap-1"
           @submit.prevent="resetPassword"
         >
-          <FormsDefaultInput
+          <InputDefault
             id="new-password"
             v-model="passwordReset.newPassword"
             type="password"
             label="New Password"
           />
-          <FormsDefaultInput
+          <InputDefault
             id="confirm-password"
             v-model="passwordReset.confirmPassword"
             type="password"
             label="Confirm Password"
           />
-          <ButtonDefault
-            :disabled="disableResetPassword"
-            type="submit"
-            text="Reset Password"
-          />
+          <ButtonDefault :disabled="disableResetPassword" type="submit">
+            Reset Password
+          </ButtonDefault>
         </form>
         <p
           v-if="passwordReset.status.length"

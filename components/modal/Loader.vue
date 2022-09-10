@@ -9,15 +9,17 @@
 </template>
 
 <script>
-import { useUserStore } from "~~/store/userStore";
+import { useUserStore } from "~~/store/UserStore";
+import { useBookStore } from "~~/store/BookStore";
 import { useShelfStore } from "~~/store/ShelfStore";
 
 export default {
   setup() {
     const userStore = useUserStore();
+    const bookStore = useBookStore();
     const shelfStore = useShelfStore();
     const showLoader = computed(() => {
-      return userStore.loading || shelfStore.loading;
+      return userStore.loading || bookStore.loading || shelfStore.loading;
     });
     return {
       showLoader,

@@ -1,5 +1,5 @@
 <template>
-  <h3 class="book-page__author">by {{ props.book.author }}</h3>
+  <h2 class="book-page__author">by {{ props.book.author }}</h2>
 </template>
 
 <script>
@@ -21,12 +21,8 @@ export default {
 </script>
 
 <style>
-.book-page__author {
-  font-size: var(--font-size-1);
-}
 @media (min-width: 768px) {
   .book-page__author {
-    font-size: var(--font-size-2);
     font-weight: normal;
   }
 }

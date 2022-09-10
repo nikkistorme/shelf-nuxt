@@ -33,7 +33,7 @@ export default {
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s;
-  z-index: 1;
+  z-index: var(--z-index-modal-backdrop);
 }
 .page-modal__overlay.open {
   visibility: visible;

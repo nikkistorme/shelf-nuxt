@@ -1,9 +1,9 @@
 <template>
   <div class="app-container d-flex flex-column">
     <ModalWrapper />
-    <HeaderBar v-show="userAuth" />
+    <HeaderBar />
     <NuxtPage class="app-content" />
-    <!-- <AddBookButton /> -->
+    <AddBookButton />
   </div>
 </template>
 
@@ -20,9 +20,9 @@ export default {
     const userAuth = useSupabaseUser();
 
     const fillStore = async () => {
-      if (!bookStore.books?.length > 0) {
+      if (!bookStore.userBooks?.length > 0) {
         console.log("Book Store empty, fetching books");
-        bookStore.fetchBooks();
+        bookStore.fetchUserBooks();
       }
       if (!shelfStore.shelves?.length > 0) {
         console.log("Shelf Store empty, fetching shelves");
@@ -44,17 +44,12 @@ export default {
       userAuth,
     };
   },
-  // methods: {
-  //   async test() {
-  //     const ay = await $fetch("/api/user", { method: "post" });
-  //     console.log("🚀 ~ ay", ay);
-  //   },
-  // },
 };
 </script>
 
 <style>
 .app-content {
   min-height: calc(100vh - var(--header-height));
+  overflow: hidden;
 }
 </style>
