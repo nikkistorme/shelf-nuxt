@@ -1,5 +1,5 @@
 <template>
-  <header class="site-header d-flex ai-center jc-space-between">
+  <header id="header" class="site-header d-flex ai-center jc-between">
     <div class="left d-flex ai-center">
       <HeaderLogo />
       <HeaderDesktopNav class="desktop-only" />

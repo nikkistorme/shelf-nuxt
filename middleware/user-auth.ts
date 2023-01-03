@@ -8,11 +8,15 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log('Fetching user profile');
     await userStore.fetchProfile();
   }
+  
+  console.log("🚀 ~ to.path (auth)", to.path);
   if (userAuth.value && to.path === '/') {
+    console.log('auth: Redirecting to /home');
     return navigateTo('/home');
-  } else if (!userAuth.value && to.path === '/account') {
+  } else if (!userAuth.value && to.path !== '/' && !to.path.includes('/books')) {
+    console.log('auth: Redirecting to /');
     return navigateTo('/');
+  } else {
+    console.log('auth: No redirect');
   }
-  // console.log("🚀 ~ userAuth4", userAuth.value);
-  // console.log("🚀 ~ userStore.profile", userStore.profile);
 })

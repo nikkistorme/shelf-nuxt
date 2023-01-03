@@ -1,5 +1,6 @@
 <template>
-  <main class="book-page d-flex jc-center">
+  <div class="book-page d-flex jc-center">
+    <Title>{{ userBook ? userBook.title : book.title }}</Title>
     <div class="book-page__content w-100">
       <BookPageEditInfo
         v-if="userAuth && userBook?.id"
@@ -7,14 +8,10 @@
       />
       <div class="book-page__cover-container d-flex flex-column w-100">
         <div class="book-page__cover d-flex jc-center mb-2">
-          <img
-            v-if="userBook.cover"
-            :src="userBook.cover"
-            :alt="userBook.title"
-          />
+          <img v-if="coverImage" :src="coverImage" :alt="coverAltText" />
           <div
             v-else
-            class="book-page__cover-placeholder d-flex flex-column jc-space-between ai-center p-1"
+            class="book-page__cover-placeholder d-flex flex-column jc-between ai-center p-1"
           >
             <h5>{{ userBook.title }}</h5>
             <p>{{ userBook.author }}</p>
@@ -44,14 +41,14 @@
         <BookPageTitle :book="book" />
         <BookPageAuthor :book="book" />
         <div class="d-flex ai-baseline gap-half">
-          <BookPageTotalPages :book="userBook" />
+          <BookPageTotalPages :book="userBook?.id ? userBook : book" />
           <span>|</span>
           <BookPagePublishing v-if="book.publisher" :book="book" />
         </div>
       </div>
-      <!-- TODO: add/remove a book from shelves -->
       <div class="book-page__cards d-flex flex-column">
-        <div class="book-page__in-progress-info">
+        <BookPageShelves v-if="userBook && shelves?.length" />
+        <div class="book-page__in-progress-info d-flex flex-wrap">
           <BookPageProgress
             v-if="userAuth && userBook?.id && userBook.in_progress"
             :book="userBook"
@@ -67,22 +64,35 @@
         <!-- TODO: Show book history -->
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
 import { storeToRefs } from "pinia";
 import { useBookStore } from "~~/store/BookStore";
+import { useShelfStore } from "~~/store/ShelfStore";
 
 export default {
   setup() {
     definePageMeta({
-      middleware: ["auth", "book"],
+      middleware: ["user-auth", "book"],
     });
     const userAuth = useSupabaseUser();
 
     const bookStore = useBookStore();
     const { book, userBook } = storeToRefs(bookStore);
+
+    const coverImage = computed(() => {
+      if (userBook?.value?.cover) return userBook.value.cover;
+      if (book?.value?.cover) return book.value.cover;
+      return null;
+    });
+
+    const coverAltText = computed(() => {
+      if (userBook?.value?.title) return userBook.value.title;
+      if (book?.value?.title) return book.value.title;
+      return "";
+    });
 
     async function addBookToLibrary() {
       await bookStore.addBookToLibrary();
@@ -96,13 +106,19 @@ export default {
       await bookStore.removeBookFromLibrary();
     }
 
+    const shelfStore = useShelfStore();
+    const { shelves } = storeToRefs(shelfStore);
+
     return {
       userAuth,
       book,
       userBook,
+      coverImage,
+      coverAltText,
       addBookToLibrary,
       startReadingBook,
       removeBookFromLibrary,
+      shelves,
     };
   },
 };
@@ -113,10 +129,7 @@ export default {
   position: relative;
   display: grid;
   gap: var(--spacing-size-2);
-  max-width: 900px;
   height: min-content;
-  padding: var(--spacing-size-3) var(--spacing-size-1);
-  margin: var(--spacing-size-1);
   background: var(--color-white);
 }
 .book-page__edit-icon {
@@ -127,7 +140,6 @@ export default {
 .book-page__cover {
   height: 350px;
   max-width: 100%;
-  /* overflow: hidden; */
 }
 .book-page__cover img {
   height: 100%;
@@ -153,7 +165,7 @@ export default {
   grid-auto-rows: min-content;
 }
 .book-page__in-progress-info {
-  max-width: 400px;
+  column-gap: var(--spacing-size-3);
 }
 @media (min-width: 768px) {
   .book-page__content {

@@ -5,7 +5,7 @@
       @click="setBookSearchPopover()"
     />
     <div class="add-book__options" :class="showBookSearchPopover ? 'open' : ''">
-      <div class="add-book__options-list d-flex flex-column jc-space-between">
+      <div class="add-book__options-list d-flex flex-column jc-between">
         <div>
           <form class="add-book__search-form" @submit.prevent="submitSearch">
             <InputDefault
@@ -50,20 +50,17 @@
             class="add-book__results-loading"
           />
         </div>
-        <!-- <router-link
-          to="/add-book"
-          class="add-book__manual d-flex jc-center ai-center gap-half"
-          @click="addBookManually"
-        >
+        <a class="add-book__manual d-flex jc-center ai-center gap-half">
           Add a book manually
-        </router-link> -->
+        </a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { searchBooks } from "~/services/bookService";
+import { searchBooks, searchGoogleBooks } from "~/services/bookService";
+import { useBookStore } from "~~/store/BookStore";
 
 export default {
   setup() {
@@ -105,18 +102,32 @@ export default {
     const resultsLoading = ref(false);
     async function searchForBook(query) {
       resultsLoading.value = true;
-      results.value = await searchBooks(query);
+      let searchResults;
+      searchResults = await searchBooks(query);
+      if (searchResults.length < 5) {
+        const neededResults = 5 - searchResults.length;
+        const googleResults = await searchGoogleBooks(query, neededResults);
+        searchResults = searchResults.concat(googleResults);
+      }
+      results.value = searchResults;
       resultsLoading.value = false;
     }
 
     const router = useRouter();
+    const bookStore = useBookStore();
     async function viewBook(book) {
-      await router.push(`/books/${book.id}`);
-      searchTerm.value = "";
-      const fullPathPieces = router.currentRoute.value.fullPath.split("/");
-      const finalPathPiece = fullPathPieces[fullPathPieces.length - 1];
-      if (finalPathPiece === book.id.toString())
+      if (book.id) {
+        await router.push(`/books/${book.id}`);
+        const fullPathPieces = router.currentRoute.value.fullPath.split("/");
+        const finalPathPiece = fullPathPieces[fullPathPieces.length - 1];
+        if (finalPathPiece === book.id.toString())
+          showBookSearchPopover.value = false;
+      } else {
+        bookStore.bookToAdd = book;
+        await router.push(`/books/add`);
         showBookSearchPopover.value = false;
+      }
+      searchTerm.value = "";
     }
 
     return {

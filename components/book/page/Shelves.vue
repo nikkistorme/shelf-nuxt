@@ -1,120 +1,94 @@
 <template>
-  <div class="book-page__shelves d-flex flex-wrap mb-2">
-    <AddOptionButton
-      v-if="shelfOptions.length > 0"
-      :id="'add-book-to-shelf'"
-      v-model="selectedShelf"
-      input-name="add-book-to-shelf"
-      :options="shelfOptions"
-      :text="!detailedBook.shelves.length ? 'Add to a shelf' : ''"
-    />
+  <div class="bp-shelves d-flex flex-wrap">
+    <div class="bp-shelves__button d-flex">
+      <IconAddBook class="bp-shelves__button-icon cursor-pointer h-100" />
+      <ButtonInline
+        class="bp-shelves__button-inline"
+        :text="!userBook?.shelves?.length ? 'Add to shelf' : ''"
+        underline
+        color="blue"
+      />
+      <select
+        id="add-book-to-shelf"
+        name="add-book-to-shelf"
+        class="bp-shelves__button-select h-100 w-100 cursor-pointer"
+      ></select>
+    </div>
     <div
-      v-for="(shelf, i) in detailedBook.shelves"
+      v-for="(shelf, i) in userBook.shelves"
       :key="i"
-      class="book-page__shelf d-flex ai-center"
+      class="bp-shelves__shelf d-flex ai-center"
     >
       <p>
         {{ getShelfById(shelf).name }}
       </p>
-      <div
-        class="book-page__remove-from-shelf d-flex cursor-pointer"
+      <button
+        class="bp-shelves__remove button-is-container d-flex cursor-pointer"
+        type="button"
         @click="removeFromShelf(shelf)"
       >
-        <CloseIcon class="w-100 h-100" color="red" />
-      </div>
+        <IconClose class="w-100 h-100" color="red" />
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
-import { mapActions } from "vuex";
-import { makeChange } from "../../services/changeService.js";
-
-import CloseIcon from "../icons/CloseIcon.vue";
-import AddOptionButton from "../buttons/AddOptionButton.vue";
+import { storeToRefs } from "pinia";
+import { useBookStore } from "~/store/BookStore";
+import { useShelfStore } from "~/store/ShelfStore";
 
 export default {
-  components: { CloseIcon, AddOptionButton },
-  data() {
+  setup() {
+    const bookStore = useBookStore();
+    const ShelfStore = useShelfStore();
+
+    const { userBook } = storeToRefs(bookStore);
+    const { shelves } = storeToRefs(ShelfStore);
+
+    function getShelfById(id) {
+      const shelfFromStore = shelves.value.find(
+        (shelf) => parseInt(shelf.id) === parseInt(id)
+      );
+      return shelfFromStore ? shelfFromStore : "";
+    }
+
     return {
-      selectedShelf: "",
+      userBook,
+      getShelfById,
     };
-  },
-  computed: {
-    ...mapGetters(["shelves", "detailedBook", "getShelfById"]),
-    shelfOptions() {
-      let validShelves = this.shelves.filter((shelf) => {
-        return (
-          !shelf.inProgressShelf &&
-          !shelf.allBooksShelf &&
-          !shelf.finishedShelf &&
-          !shelf.unreadShelf
-        );
-      });
-      validShelves = validShelves.filter((shelf) => {
-        return !this.detailedBook.shelves.includes(shelf.id);
-      });
-      return validShelves.map((shelf) => ({
-        value: shelf.id,
-        label: shelf.name,
-      }));
-    },
-    sanitizedShelves() {
-      let shelves = this.detailedBook.shelves;
-      return shelves;
-    },
-  },
-  watch: {
-    selectedShelf(newVal) {
-      if (newVal) {
-        this.addToShelf(newVal);
-        this.selectedShelf = "";
-      }
-    },
-  },
-  methods: {
-    ...mapActions(["addBookToShelf", "removeBookFromShelf"]),
-    async removeFromShelf(shelfId) {
-      await this.removeBookFromShelf({
-        book: this.detailedBook,
-        change: makeChange("removeFromShelf", {
-          oldValue: shelfId,
-          newValue: null,
-          fields: {
-            shelfName: this.getShelfById(shelfId).name,
-          },
-        }),
-      });
-    },
-    async addToShelf(shelfId) {
-      await this.addBookToShelf({
-        book: this.detailedBook,
-        change: makeChange("addToShelf", {
-          oldValue: null,
-          newValue: shelfId,
-          fields: {
-            shelfName: this.getShelfById(shelfId).name,
-          },
-        }),
-      });
-    },
   },
 };
 </script>
 
 <style>
-.book-page__shelves {
+.bp-shelves {
   gap: var(--spacing-size-half);
 }
-.book-page__shelf {
+.bp-shelves__button {
+  position: relative;
+  gap: var(--spacing-size-half);
+  height: 30px;
+}
+.bp-shelves__button-icon {
+  width: fit-content;
+}
+.bp-shelves__button-inline {
+  min-width: fit-content;
+}
+.bp-shelves__button-select {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+.bp-shelves__shelf {
   gap: var(--spacing-size-half);
   padding: 0 calc((var(--spacing-size-half)));
   border-radius: var(--border-radius-2);
   border: 2px solid var(--color-primary);
 }
-.book-page__remove-from-shelf {
+.bp-shelves__remove {
   height: 13px;
   width: 13px;
 }

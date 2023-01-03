@@ -1,10 +1,81 @@
+<template>
+  <div v-if="!userAuth" class="login-page">
+    <h1>Shelf LP</h1>
+    <div class="login-page__form-card d-flex ai-center flex-column">
+      <h4 v-if="activeForm === 'sign-up'">Create Account</h4>
+      <h4 v-if="activeForm === 'login'">Login</h4>
+      <h4 v-if="activeForm === 'password-reset'">Forgot Password</h4>
+      <form
+        class="login-page__form d-flex flex-column ai-center w-100"
+        @submit.prevent="submitForm"
+      >
+        <InputDefault
+          v-show="activeForm === 'sign-up'"
+          id="name"
+          v-model="credentials.name"
+          type="text"
+          label="Name"
+        />
+        <InputDefault
+          id="email"
+          v-model="credentials.email"
+          type="email"
+          label="Email"
+        />
+        <InputPassword
+          v-if="activeForm !== 'password-reset'"
+          id="password"
+          v-model="credentials.password"
+          class="w-100"
+          label="Password"
+        />
+        <div v-if="errors.length" class="login-page__errors">
+          <ul>
+            <li v-for="(error, i) in errors" :key="i">
+              {{ error }}
+            </li>
+          </ul>
+        </div>
+        <div class="d-flex jc-between w-100 my-1">
+          <ButtonDefault :disabled="disableForm" type="submit">
+            {{ submitButtonText }}
+          </ButtonDefault>
+          <ButtonInline
+            v-if="activeForm !== 'password-reset'"
+            text="Forgot password?"
+            @click="showForm('password-reset')"
+          />
+        </div>
+      </form>
+      <div class="login-page__account-prompts w-100">
+        <p v-if="activeForm !== 'login'">
+          Already have an account?
+          <ButtonInline
+            class="login-page__sign-in"
+            text="Sign in"
+            @click="showForm('login')"
+          />
+        </p>
+        <p v-if="activeForm !== 'sign-up'">
+          Don't have an account?
+          <ButtonInline
+            class="login-page__sign-in"
+            text="Sign up"
+            @click="showForm('sign-up')"
+          />
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 import { useUserStore } from "~~/store/userStore";
 
 export default {
   setup() {
     definePageMeta({
-      middleware: "auth",
+      middleware: "user-auth",
     });
     const router = useRouter();
     const userStore = useUserStore();
@@ -113,80 +184,7 @@ export default {
 };
 </script>
 
-<template>
-  <main v-if="!userAuth" class="login-page">
-    <div class="login-page__form-card d-flex ai-center flex-column">
-      <h4 v-if="activeForm === 'sign-up'">Create Account</h4>
-      <h4 v-if="activeForm === 'login'">Login</h4>
-      <h4 v-if="activeForm === 'password-reset'">Forgot Password</h4>
-      <form
-        class="login-page__form d-flex flex-column ai-center w-100"
-        @submit.prevent="submitForm"
-      >
-        <InputDefault
-          v-show="activeForm === 'sign-up'"
-          id="name"
-          v-model="credentials.name"
-          type="text"
-          label="Name"
-        />
-        <InputDefault
-          id="email"
-          v-model="credentials.email"
-          type="email"
-          label="Email"
-        />
-        <InputPassword
-          v-if="activeForm !== 'password-reset'"
-          id="password"
-          v-model="credentials.password"
-          class="w-100"
-          label="Password"
-        />
-        <div v-if="errors.length" class="login-page__errors">
-          <ul>
-            <li v-for="(error, i) in errors" :key="i">
-              {{ error }}
-            </li>
-          </ul>
-        </div>
-        <div class="d-flex jc-space-between w-100 my-1">
-          <ButtonDefault :disabled="disableForm" type="submit">
-            {{ submitButtonText }}
-          </ButtonDefault>
-          <ButtonInline
-            v-if="activeForm !== 'password-reset'"
-            text="Forgot password?"
-            @click="showForm('password-reset')"
-          />
-        </div>
-      </form>
-      <div class="login-page__account-prompts w-100">
-        <p v-if="activeForm !== 'login'">
-          Already have an account?
-          <ButtonInline
-            class="login-page__sign-in"
-            text="Sign in"
-            @click="showForm('login')"
-          />
-        </p>
-        <p v-if="activeForm !== 'sign-up'">
-          Don't have an account?
-          <ButtonInline
-            class="login-page__sign-in"
-            text="Sign up"
-            @click="showForm('sign-up')"
-          />
-        </p>
-      </div>
-    </div>
-  </main>
-</template>
-
 <style>
-.login-page {
-  margin: var(--spacing-size-3) var(--spacing-size-1);
-}
 .login-page__form-card {
   max-width: 400px;
   padding: var(--spacing-size-1) var(--spacing-size-2);

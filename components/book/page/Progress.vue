@@ -1,5 +1,5 @@
 <template>
-  <div class="book-page__progress d-flex ai-center pb-1">
+  <div class="book-page__progress d-flex gap-3 ai-center pb-1">
     <div class="d-flex ai-center gap-1">
       <IconProgressCircle :percent="percentComplete" />
       <div class="d-flex flex-column">
@@ -76,6 +76,8 @@ export default {
 
 <style>
 .book-page__progress {
+  width: 100%;
+  max-width: 350px;
   border-bottom: var(--default-input-border);
 }
 .book-page__stats-text {

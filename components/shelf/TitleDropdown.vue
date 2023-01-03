@@ -1,6 +1,7 @@
 <template>
   <div class="shelf-title">
     <div
+      v-show="!editName"
       class="shelf-title__select-wrapper d-flex ai-center"
       @click="openShelfSelectModal"
     >
@@ -12,6 +13,23 @@
       </div>
       <h2 class="shelf-title__name">{{ activeShelf.name }}</h2>
     </div>
+    <IconEditPencil
+      v-show="!editName"
+      class="cursor-pointer"
+      @click="toggleEditName"
+    />
+    <form
+      v-show="editName"
+      class="d-flex ai-center gap-1"
+      @submit.prevent="updateShelfName"
+    >
+      <InputDefault v-model="newShelfName" placeholder="New shelf name" />
+      <IconClose color="red" class="cursor-pointer" @click="toggleEditName" />
+      <IconCheckmark
+        class="book-details__pages-edit-confirm cursor-pointer"
+        @click="updateShelfName"
+      />
+    </form>
     <ModalShelfChange v-if="selectingShelf" />
   </div>
 </template>
@@ -40,49 +58,37 @@ export default {
       }
     });
 
+    const editName = ref(false);
+    const newShelfName = ref("");
+
+    async function updateShelfName() {
+      await shelfStore.updateShelfName(
+        activeShelf.value.id,
+        newShelfName.value
+      );
+      newShelfName.value = activeShelf.value.name;
+      editName.value = false;
+    }
+
+    function toggleEditName() {
+      editName.value = !editName.value;
+      newShelfName.value = activeShelf.value.name;
+    }
+
     return {
       activeShelf,
       selectingShelf,
       openShelfSelectModal,
+      newShelfName,
+      updateShelfName,
+      editName,
+      toggleEditName,
     };
   },
 };
-// const addHeightForNewShelf = () => {
-//   const outerDropdown = document.querySelector(".shelf-title__shelf-dropdown");
-//   const shelfList = document.querySelector(".shelf-title__dropdown-list");
-//   console.log("🚀 ~ shelfList", shelfList);
-//   if (shelfList.clientHeight < 450) {
-//     outerDropdown.style.height = outerDropdown.clientHeight + 41.88 + "px";
-//   }
-// };
 
 // export default {
-//   components: {
-//     ArrowDown,
-//     DefaultButton,
-//     DefaultInput,
-//     ShelvesList,
-//     EditPencil,
-//     CloseIcon,
-//     CheckmarkIcon,
-//   },
-//   data() {
-//     return {
-//       createShelfFormOpen: false,
-//       newShelfName: "",
-//       editName: false,
-//     };
-//   },
 //   methods: {
-//     toggleEditName() {
-//       this.editName = !this.editName;
-//       this.newShelfName = this.activeShelf.name;
-//     },
-//     async updateShelfName() {
-//       await this.updateActiveShelfName(this.newShelfName);
-//       this.newShelfName = this.activeShelf.name;
-//       this.editName = false;
-//     },
 //     toggleShelfSelect() {
 //       this.toggleModal();
 //       this.toggleLibraryShelfSelectOpen();

@@ -18,6 +18,14 @@
   flex-direction: column;
 }
 
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.flex-column-reverse {
+  flex-direction: column-reverse;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -47,7 +55,7 @@
   -webkit-justify-content: center;
 }
 
-.jc-space-between {
+.jc-between {
   justify-content: space-between;
   -webkit-justify-content: space-between;
 }

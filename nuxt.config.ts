@@ -16,8 +16,15 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
   ],
   head: {
+    title: 'Shelf',
     link: [
       { rel: 'icon', href: '/favicon.svg' }
     ]
   },
+  // Enable text compression
+  // nitro: {
+  //   compressPublicAssets: {
+  //     gzip: true,
+  //   },
+  // },
 })

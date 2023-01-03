@@ -41,7 +41,7 @@
           @click="setGoalToTwoMonths"
         />
       </div>
-      <div class="d-flex jc-space-between ai-center">
+      <div class="d-flex jc-between ai-center">
         <ButtonInline
           color="red"
           underline

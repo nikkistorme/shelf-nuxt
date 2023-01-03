@@ -1,35 +1,16 @@
 <template>
-  <div class="home-shelf d-flex flex-column jc-end w-100">
-    <div class="home-shelf__books d-flex jc-start gap-1 w-100">
+  <div class="home-shelf d-flex flex-column jc-end">
+    <div
+      class="home-shelf__books d-flex jc-start gap-1"
+      :style="{ 'max-width': shelfMaxWidth }"
+    >
       <BookShelved
         v-for="(book, i) in booksOnThisShelf"
         :key="i"
         :book="book"
         class="home-shelf__book"
+        location="home"
       />
-    </div>
-    <div class="home-shelf__floor d-flex jc-space-between w-100">
-      <h5 class="home-shelf__name" @click="shelfStore.setActiveShelf(shelf)">
-        <NuxtLink to="/shelves">{{ shelf.name }}</NuxtLink>
-      </h5>
-      <div v-if="shelf.sort" class="home-shelf__sort d-flex ai-center">
-        <InputSelect
-          :id="`shelf-sort__${shelf.id}`"
-          v-model="shelf.sort.method"
-          class="home-shelf__sort-method"
-          :options="sortOptions"
-          inline
-          no-carrot
-          align="right"
-        />
-        <div
-          class="home-shelf__sort-direction d-flex jc-center ai-center"
-          :class="{ ascending: !shelf.sort.descending }"
-          @click="changeSortDirection"
-        >
-          <IconArrowDown />
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -49,22 +30,32 @@ export default {
 
     const sortOptions = ref([
       {
-        value: "date-added-to-library",
+        value: "date_added_to_library",
         label: "Date added",
       },
       {
-        value: "percent-complete",
+        value: "percent_complete",
         label: "Progress",
       },
       {
-        value: "last-updated-progress",
+        value: "last_updated_progress",
         label: "Last updated progress",
       },
       {
-        value: "date-added-to-shelf",
+        value: "date_added_to_shelf",
         label: "Date started",
       },
     ]);
+
+    const shelfMaxWidth = computed(() => {
+      const bookCount = booksOnThisShelf.value.length;
+      const columnCount = Math.ceil(bookCount / 2);
+      console.log("🚀 ~ columnCount", columnCount);
+      const bookWidth = 125;
+      const gapWidth = 16;
+      const totalWidth = columnCount * bookWidth + (bookCount - 1) * gapWidth;
+      return `${totalWidth}px`;
+    });
 
     const shelf = ref({ ...shelfStore.inProgressShelf });
 
@@ -84,6 +75,7 @@ export default {
       shelfStore,
       booksOnThisShelf,
       sortOptions,
+      shelfMaxWidth,
       shelf,
       changeSortDirection,
     };
@@ -97,8 +89,13 @@ export default {
     grid-column: 1 / -1;
   }
 }
+.home-shelf {
+  width: 100%;
+}
 .home-shelf__books {
-  padding: calc(var(--spacing-size-1) / 4);
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 425px;
   overflow-x: auto;
   overflow-y: hidden;
 }

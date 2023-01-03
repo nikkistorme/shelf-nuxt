@@ -1,11 +1,11 @@
 <template>
   <div class="modal-shelf-change generic-modal flex-column">
-    <div class="modal-shelf-change__wrapper d-flex flex-column ai-end p-1 pt-2">
-      <ul class="modal-shelf-change__list w-100 px-1">
+    <div class="modal-shelf-change__wrapper d-flex flex-column ai-end">
+      <ul class="modal-shelf-change__list w-100">
         <li
           v-for="(shelf, i) in sortedShelves"
           :key="i"
-          class="modal-shelf-change__shelf d-flex jc-space-between ai-center"
+          class="modal-shelf-change__shelf d-flex jc-between ai-center"
           :class="{ 'mb-1': i !== sortedShelves.length - 1 }"
         >
           <div class="d-flex">
@@ -15,50 +15,47 @@
             >
               {{ shelf.name }}
             </p>
-            <ButtonInline
+            <NuxtLink
               v-else
-              :text="shelf.name"
-              color="blue"
-              @click="setActiveShelf(shelf)"
-            />
+              :to="`/shelves/${shelf.id}`"
+              @click="changeShelves"
+            >
+              {{ shelf.name }}
+            </NuxtLink>
             <div>
               <p>&nbsp;({{ shelf.book_count }})</p>
             </div>
           </div>
-          <!-- <CloseIcon
+          <IconClose
             v-if="canDeleteShelf(shelf)"
-            class="shelves-list__delete"
+            class="shelves-list__delete cursor-pointer"
             color="red"
-            @click="removeShelf(shelf)"
-          /> -->
+            @click="deleteShelf(shelf.id)"
+          />
         </li>
       </ul>
-      <!-- <hr class="my-2" />
-      <DefaultButton
-        :text="createShelfFormOpen ? 'Cancel' : 'New shelf'"
-        flavor="tiny"
-        :color="createShelfFormOpen ? 'red' : 'blue'"
-        class="w-fit-content"
+      <hr class="my-2" />
+      <ButtonDefault
+        :color="creatingNewShelf ? 'red' : 'blue'"
         @click="toggleCreateShelfForm"
-      />
+      >
+        {{ creatingNewShelf ? "Cancel" : "New shelf" }}
+      </ButtonDefault>
       <form
         class="create-shelf d-flex flex-column ai-end w-100"
-        :class="{ open: createShelfFormOpen }"
-        @submit.prevent="createShelf"
+        :class="{ open: creatingNewShelf }"
+        @submit.prevent="createNewShelf"
       >
-        <DefaultInput
+        <InputDefault
           id="create-shelf-name"
           v-model="newShelfName"
           label="Name"
           class="create-shelf__name w-100 mb-1"
         />
-        <DefaultButton
-          type="submit"
-          text="Create"
-          flavor="tiny"
-          color="blue"
-        />
-      </form> -->
+        <ButtonDefault type="submit" flavor="tiny" color="blue">
+          Create
+        </ButtonDefault>
+      </form>
     </div>
   </div>
 </template>
@@ -74,18 +71,20 @@ export default {
     const { shelves, activeShelf } = storeToRefs(shelfStore);
 
     const sortedShelves = computed(() => {
-      const allBooksShelf = shelves.value.find((shelf) => shelf.allBooksShelf);
-      const finishedShelf = shelves.value.find((shelf) => shelf.finishedShelf);
-      const inProgressShelf = shelves.value.find(
-        (shelf) => shelf.inProgressShelf
+      const allBooksShelf = shelves.value.find(
+        (shelf) => shelf.all_books_shelf
       );
-      const unreadShelf = shelves.value.find((shelf) => shelf.unreadShelf);
+      const finishedShelf = shelves.value.find((shelf) => shelf.finished_shelf);
+      const inProgressShelf = shelves.value.find(
+        (shelf) => shelf.in_progress_shelf
+      );
+      const unreadShelf = shelves.value.find((shelf) => shelf.unread_shelf);
       const sorted = shelves.value.filter(
         (shelf) =>
-          !shelf.allBooksShelf &&
-          !shelf.finishedShelf &&
-          !shelf.inProgressShelf &&
-          !shelf.unreadShelf
+          !shelf.all_books_shelf &&
+          !shelf.finished_shelf &&
+          !shelf.in_progress_shelf &&
+          !shelf.unread_shelf
       );
       sorted.sort((a, b) => (a.name > b.name ? 1 : -1));
       if (unreadShelf) sorted.unshift(unreadShelf);
@@ -96,15 +95,45 @@ export default {
     });
 
     const modalStore = useModalStore();
-    async function setActiveShelf(shelf) {
-      await shelfStore.setActiveShelf(shelf);
+    async function changeShelves() {
       modalStore.closeModal();
+    }
+
+    const creatingNewShelf = ref(false);
+    const newShelfName = ref("");
+    function toggleCreateShelfForm() {
+      newShelfName.value = "";
+      creatingNewShelf.value = !creatingNewShelf.value;
+    }
+
+    async function createNewShelf() {
+      await shelfStore.createNewShelf(newShelfName.value);
+      toggleCreateShelfForm();
+    }
+
+    function canDeleteShelf(shelf) {
+      return (
+        !shelf.all_books_shelf &&
+        !shelf.finished_shelf &&
+        !shelf.in_progress_shelf &&
+        !shelf.unread_shelf
+      );
+    }
+
+    async function deleteShelf(shelf_id) {
+      await shelfStore.deleteShelf(shelf_id);
     }
 
     return {
       sortedShelves,
       activeShelf,
-      setActiveShelf,
+      changeShelves,
+      creatingNewShelf,
+      newShelfName,
+      toggleCreateShelfForm,
+      createNewShelf,
+      canDeleteShelf,
+      deleteShelf,
     };
   },
 };

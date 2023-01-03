@@ -1,4 +1,25 @@
 import { newChange } from "./changeService";
+import {
+  getAllBooksShelfCount,
+  updateAllBooksShelfCount,
+} from "./shelfService";
+
+export const bookSchema = () => {
+  return {
+    author: "",
+    author_last_to_first: "",
+    average_rating: null,
+    cover: "",
+    description: "",
+    isbn: "",
+    isbn_13: "",
+    published: null,
+    published_original: null,
+    publisher: "",
+    title: "",
+    total_pages: null,
+  };
+};
 
 export const userBookSchema = () => {
   return {
@@ -23,6 +44,20 @@ export const userBookSchema = () => {
   };
 };
 
+export const addNewBook = async (book) => {
+  const supabase = useSupabaseClient();
+  try {
+    const { data: newBook, error } = await supabase
+      .from("books")
+      .insert([book]);
+    if (error) throw error;
+    return newBook[0];
+  } catch (error) {
+    console.log("🚀 ~ error", error);
+    throw error;
+  }
+};
+
 export const addBookToLibrary = async (book) => {
   const supabase = useSupabaseClient();
   const userAuth = useSupabaseUser();
@@ -37,10 +72,13 @@ export const addBookToLibrary = async (book) => {
   newBook.total_pages = book.total_pages;
   newBook.user_id = userAuth.value.id;
   try {
-    const { data: userBook, error } = await supabase
+    const { data: userBook, error: userBookError } = await supabase
       .from("user_books")
       .insert([newBook]);
-    if (error) throw error;
+
+    const allBooksShelfCount = await getAllBooksShelfCount();
+    await updateAllBooksShelfCount(allBooksShelfCount);
+
     return userBook[0];
   } catch (error) {
     console.log("🚀 ~ error", error);
@@ -54,6 +92,19 @@ export const fetchUserBooks = async () => {
     const { data: books, error } = await supabase.from("user_books").select();
     if (error) throw error;
     return books;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchInProgressBooks = async () => {
+  const supabase = useSupabaseClient();
+  try {
+    const { data } = await supabase
+      .from("user_books")
+      .select()
+      .eq("in_progress", true);
+    return data;
   } catch (error) {
     throw error;
   }
@@ -89,16 +140,17 @@ export const startReadingBook = async (user_book) => {
   bookUpdates.changes.sort((a, b) => {
     return a.created > b.created ? -1 : 1;
   });
+  let updatedBook;
   try {
-    const { data: updatedBook, error } = await supabase
+    const { data } = await supabase
       .from("user_books")
       .update(bookUpdates)
       .match({ id: user_book.id });
-    if (error) throw error;
-    return updatedBook[0];
+    updatedBook = data[0];
   } catch (error) {
     throw error;
   }
+  return updatedBook;
 };
 
 export const updateProgress = async (user_book_id, book_updates) => {
@@ -169,10 +221,21 @@ export const searchBooks = async (query) => {
     const { data, error } = await supabase
       .from("books")
       .select()
-      .textSearch("fts", paramString);
+      .textSearch("fts", paramString, {
+        type: "websearch",
+        config: "english",
+      });
     if (error) throw error;
     return data;
   } catch (error) {
     throw error;
   }
+};
+
+export const searchGoogleBooks = async (query, quantity) => {
+  const searchResults = await $fetch("/api/google-books", {
+    method: "post",
+    body: { query, quantity },
+  });
+  return searchResults;
 };

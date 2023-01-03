@@ -81,7 +81,7 @@
         </div>
       </div>
       <!-- DURATION -->
-      <div class="d-flex jc-space-between">
+      <div class="d-flex jc-between">
         <ButtonInline
           text="Finished?"
           color="green"

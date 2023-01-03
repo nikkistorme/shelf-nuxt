@@ -52,7 +52,6 @@ export default {
           changes: newChanges,
           cover: imageURL,
         };
-        console.log("🚀 ~ bookUpdates", bookUpdates);
         await bookStore.uploadNewCoverImage(userBook.value.id, bookUpdates);
       }
     }

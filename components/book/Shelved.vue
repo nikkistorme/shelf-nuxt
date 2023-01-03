@@ -1,9 +1,9 @@
 <template>
-  <div class="shelved-book">
-    <div
+  <div class="shelved-book" :class="location">
+    <NuxtLink
+      :to="`/books/${props.book.base}`"
       class="shelved-book__cover"
-      :class="router.currentRoute.value.name"
-      @click="viewBookDetails"
+      :class="location"
     >
       <img
         v-if="props?.book?.cover"
@@ -12,12 +12,12 @@
       />
       <div
         v-else
-        class="shelved-book__cover-placeholder d-flex flex-column jc-space-between ai-center p-1"
+        class="shelved-book__cover-placeholder d-flex flex-column jc-between ai-center p-1"
       >
         <h5>{{ props.book.title }}</h5>
         <p>{{ props.book.author }}</p>
       </div>
-    </div>
+    </NuxtLink>
   </div>
 </template>
 
@@ -25,6 +25,7 @@
 export default {
   props: {
     book: Object,
+    location: String,
   },
   setup(props) {
     const router = useRouter();
@@ -42,6 +43,9 @@ export default {
 </script>
 
 <style>
+.shelved-book.home {
+  width: fit-content;
+}
 .shelved-book__cover img {
   border-radius: 5px;
   object-fit: contain;
@@ -49,12 +53,14 @@ export default {
   box-shadow: var(--box-shadow-2);
 }
 .home.shelved-book__cover {
-  height: 250px;
-  max-width: 400px;
-  /* overflow: hidden; */
+  display: flex;
+  align-items: flex-end;
+  width: 125px;
+  height: min-content;
 }
 .home.shelved-book__cover img {
-  height: 100%;
+  height: auto;
+  width: 100%;
   object-fit: contain;
   object-position: bottom;
 }

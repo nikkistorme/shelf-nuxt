@@ -6,14 +6,17 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const shelfStore = useShelfStore();
   
   await shelfStore.fetchShelves();
+  let shelf;
   let redirectURL;
-  if (to.name === "shelves") {
+
+  if (id) shelf = shelfStore.getShelfById(id);
+
+  if (to.name === "shelves" || !shelf) {
     await shelfStore.setActiveShelf(shelfStore.getAllBooksShelf);
     redirectURL = `/shelves/${shelfStore.activeShelf.id}`;
-    console.log("🚀 ~ redirectURL", redirectURL);
+    console.log("shelves: Redirecting to", redirectURL);
     return navigateTo(redirectURL);
-  } else if (id) {
-    const shelf = shelfStore.getShelfById(id);
-    await shelfStore.setActiveShelf(shelfStore.getAllBooksShelf);
+  } else if (shelf) {
+    await shelfStore.setActiveShelf(shelf);
   }
 })

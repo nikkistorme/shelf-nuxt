@@ -1,5 +1,5 @@
 <template>
-  <div v-if="userBook.id" class="book-page__goals d-flex ai-center w-100">
+  <div v-if="userBook.id" class="book-page__goals d-flex ai-center gap-3 w-100">
     <IconGoals
       v-if="!userBook.goal?.goalDate"
       class="book-page__goals-icon mr-1"
@@ -97,6 +97,7 @@ export default {
 
 <style>
 .book-page__goals {
+  max-width: 350px;
   border-bottom: var(--default-input-border);
 }
 .book-page__goals-icon {

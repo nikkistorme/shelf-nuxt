@@ -1,5 +1,5 @@
 <template>
-  <main class="account-page page-wrapper w-100">
+  <div class="account-page d-flex flex-column ai-center w-100">
     <div class="d-flex jc-center w-100">
       <div class="account-page__image">
         <img
@@ -48,7 +48,7 @@
         </p>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
@@ -57,7 +57,7 @@ import { useUserStore } from "~/store/UserStore";
 export default {
   setup() {
     definePageMeta({
-      middleware: "auth",
+      middleware: "user-auth",
     });
     const userStore = useUserStore();
     const passwordReset = ref({
@@ -69,23 +69,24 @@ export default {
 
     const disableResetPassword = computed(() => {
       return (
-        passwordReset?.newPassword?.length === 0 ||
-        passwordReset?.confirmPassword?.length === 0 ||
-        passwordReset.newPassword !== passwordReset.confirmPassword
+        passwordReset?.value.newPassword?.length === 0 ||
+        passwordReset?.value.confirmPassword?.length === 0 ||
+        passwordReset?.value.newPassword !==
+          passwordReset?.value.confirmPassword
       );
     });
 
     async function resetPassword() {
       if (!disableResetPassword.value) {
         try {
-          await userStore.resetPassword(passwordReset.newPassword);
-          passwordReset.newPassword = "";
-          passwordReset.confirmPassword = "";
-          passwordReset.message = "Password updated successfully";
-          passwordReset.status = "success";
+          await userStore.resetPassword(passwordReset.value.newPassword);
+          passwordReset.value.newPassword = "";
+          passwordReset.value.confirmPassword = "";
+          passwordReset.value.message = "Password updated successfully";
+          passwordReset.value.status = "success";
         } catch (error) {
-          passwordReset.message = error;
-          passwordReset.status = "failure";
+          passwordReset.value.message = error;
+          passwordReset.value.status = "failure";
         }
       }
     }
@@ -102,9 +103,6 @@ export default {
 
 <style>
 .account-page {
-  align-self: center;
-  max-width: 500px;
-  margin: var(--spacing-size-2) var(--spacing-size-1);
 }
 .account-page__image {
   height: 100px;
@@ -137,10 +135,8 @@ export default {
 .account-page__password-reset-message.failure {
   color: var(--color-red);
 }
-
-@media (min-width: 768px) {
-  .account-page {
-    margin: var(--spacing-size-4);
-  }
+.account-page__grid {
+  width: 100%;
+  max-width: 400px;
 }
 </style>
