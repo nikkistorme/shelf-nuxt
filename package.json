@@ -4,11 +4,11 @@
     "node": "16.x"
   },
   "scripts": {
-    "build": "nuxt build",
     "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "heroku-postbuild": "npm run build"
+    "preview": "nuxt preview"
   },
   "devDependencies": {
     "@nuxtjs/supabase": "^0.1.14",
