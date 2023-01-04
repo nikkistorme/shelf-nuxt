@@ -50,7 +50,7 @@ export default {
     const shelfMaxWidth = computed(() => {
       const bookCount = booksOnThisShelf.value.length;
       const columnCount = Math.ceil(bookCount / 2);
-      console.log("🚀 ~ columnCount", columnCount);
+      // console.log("🚀 ~ columnCount", columnCount);
       const bookWidth = 125;
       const gapWidth = 16;
       const totalWidth = columnCount * bookWidth + (bookCount - 1) * gapWidth;

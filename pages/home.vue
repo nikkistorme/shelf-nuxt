@@ -1,18 +1,18 @@
 <template>
-  <Head>
-    <Link
-      v-for="(image, i) in inProgressBookImages"
-      :key="i"
-      rel="preload"
-      fetchpriority="high"
-      as="image"
-      :href="image"
-    />
-  </Head>
   <div
     v-if="profile?.id && getSortedShelves && inProgressShelf"
     class="home-page d-grid"
   >
+    <Head>
+      <Link
+        v-for="(image, i) in inProgressBookImages"
+        :key="i"
+        rel="preload"
+        fetchpriority="high"
+        as="image"
+        :href="image"
+      />
+    </Head>
     <div class="d-flex flex-column gap-2">
       <h2>Continue reading</h2>
       <HomeShelf v-if="inProgressShelf" />
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { useBookStore } from "~/store/BookStore";
 import { useShelfStore } from "~/store/ShelfStore";
 import { useUserStore } from "~/store/UserStore";
 import { storeToRefs } from "pinia";
@@ -54,6 +55,11 @@ export default {
     const shelfStore = useShelfStore();
     const { inProgressShelf, getSortedShelves } = storeToRefs(shelfStore);
 
+    const bookStore = useBookStore();
+    const inProgressBookImages = computed(() => {
+      return bookStore.inProgressBooks.map((book) => book.cover);
+    });
+
     onMounted(() => {
       if (!inProgressShelf.value) shelfStore.fetchShelves();
     });
@@ -61,6 +67,7 @@ export default {
     return {
       profile,
       inProgressShelf,
+      inProgressBookImages,
       getSortedShelves,
     };
   },

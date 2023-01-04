@@ -3,13 +3,13 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "start": "node .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview"
   },
   "devDependencies": {
+    "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
     "@nuxtjs/supabase": "^0.1.14",
-    "nuxt": "^3.0.0-rc.8"
+    "nuxt": "^3.0.0"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.2",

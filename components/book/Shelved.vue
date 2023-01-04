@@ -5,10 +5,12 @@
       class="shelved-book__cover"
       :class="location"
     >
-      <img
+      <nuxt-img
         v-if="props?.book?.cover"
         :src="props.book.cover"
         :alt="props.book.title"
+        format="webp"
+        sizes="sm:125px"
       />
       <div
         v-else

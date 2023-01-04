@@ -1,6 +1,6 @@
 <template>
   <NuxtLink to="/home" class="header-logo">
-    <img src="/assets/img/logo.svg" alt="a row of colorful books" />
+    <img src="~/assets/img/logo.svg" alt="a row of colorful books" />
   </NuxtLink>
 </template>
 

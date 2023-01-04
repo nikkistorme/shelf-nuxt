@@ -33,7 +33,7 @@
         id="cover-upload"
         class="cover-upload__input"
         type="file"
-        @change="uploadImage"
+        @change="getImageURLs"
       />
       <InputDefault
         id="title"
@@ -100,30 +100,9 @@ export default {
 
     if (!bookToAdd.value) bookToAdd.value = bookSchema();
 
-    const fileFromEvent = (event) => {
-      const file = event.target.files[0];
-      return file;
-    };
-
-    async function uploadImage(event) {
+    async function getImageURLs(event) {
       loading.value = true;
-      const form = new FormData();
-      form.append("file", fileFromEvent(event));
-
-      const { id, uploadURL } = await $fetch("/api/image", {
-        method: "post",
-      });
-
-      const response = await fetch(uploadURL, {
-        method: "POST",
-        body: form,
-      });
-      const data = await response.json();
-      const imageURL = data.result.variants[0];
-
-      if (imageURL) {
-        bookToAdd.value.cover = imageURL;
-      }
+      uploadImage(event);
       loading.value = false;
     }
 
@@ -132,7 +111,6 @@ export default {
       console.log("🚀 ~ url", url);
       loading.value = true;
       const response = await $fetch("/api/image-url", {
-        method: "post",
         body: url,
       });
     }
@@ -158,7 +136,7 @@ export default {
       loading,
       bookToAdd,
       coverURL,
-      uploadImage,
+      getImageURLs,
       uploadImageURL,
       disableSubmission,
       submitForm,
