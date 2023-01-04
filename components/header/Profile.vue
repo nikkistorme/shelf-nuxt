@@ -4,7 +4,8 @@
       <img
         v-if="userStore?.profile?.image"
         :src="userStore.profile.image"
-        alt=""
+        loading="lazy"
+        :alt="userStore.profile.name"
       />
       <div
         v-else
