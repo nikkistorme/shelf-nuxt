@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import { useBookStore } from "~~/store/BookStore";
+import { useBookStore } from "~/store/BookStore";
 import { useShelfStore } from "~/store/ShelfStore";
-import { useUserStore } from "~/store/userStore";
+import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {
