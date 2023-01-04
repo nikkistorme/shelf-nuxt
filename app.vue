@@ -1,13 +1,5 @@
 <template>
   <div class="app-container d-flex flex-column">
-    <Head>
-      <Title>Shelf</Title>
-      <Link rel="preconnect" href="https://fonts.gstatic.com" />
-      <Meta
-        name="description"
-        content="Shelf is a book tracking app that provides a more joyful online user experience. Shelf not only provides insight and data into users reading habits, but it also turns the private experience of reading into a community-based activity that is beautiful, delightful, and shareable."
-      />
-    </Head>
     <ModalWrapper />
     <HeaderBar />
     <main class="app-content">

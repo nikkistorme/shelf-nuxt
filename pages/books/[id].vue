@@ -38,7 +38,7 @@
         />
       </div>
       <div class="book-page__base-info d-flex flex-column gap-1">
-        <BookPageTitle :book="book" />
+        <BookPageTitle v-if="book?.title" :book="book" />
         <BookPageAuthor :book="book" />
         <div class="d-flex ai-baseline gap-half">
           <BookPageTotalPages :book="userBook?.id ? userBook : book" />

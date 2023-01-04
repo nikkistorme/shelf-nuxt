@@ -1,11 +1,11 @@
-import { defineNuxtConfig } from 'nuxt'
+import { defineNuxtConfig } from 'nuxt/config';
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
-  ssr: false,
-  buildModules: [
+  modules: [
     '@pinia/nuxt',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    '@nuxt/image-edge',
   ],
   css: [
     '~/assets/css/_variables.css',
@@ -16,16 +16,16 @@ export default defineNuxtConfig({
     '~/assets/css/utilities.css',
     '~/assets/css/main.css',
   ],
-  head: {
-    title: 'Shelf',
-    link: [
-      { rel: 'icon', href: '/favicon.svg' }
-    ]
+  app: {
+    head: {
+      title: 'Shelf',
+      link: [
+        { rel: 'icon', href: '/favicon.svg' },
+        { rel: 'preconnect', href: 'https://whzpxqepohgfixqojtca.supabase.co'}
+      ],
+      meta: [
+        { name: "description", content: "Shelf is a book tracking app that provides a more joyful online user experience. Shelf not only provides insight and data into users reading habits, but it also turns the private experience of reading into a community-based activity that is beautiful, delightful, and shareable." }
+      ],
+    },
   },
-  // Enable text compression
-  // nitro: {
-  //   compressPublicAssets: {
-  //     gzip: true,
-  //   },
-  // },
 })
