@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import { useShelfStore } from "~~/store/ShelfStore";
-import { useUserStore } from "~~/store/userStore";
+import { useShelfStore } from "~/store/ShelfStore";
+import { useUserStore } from "~/store/UserStore";
 import { storeToRefs } from "pinia";
 
 export default {

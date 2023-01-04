@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { useUserStore } from "../../store/userStore";
+import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {

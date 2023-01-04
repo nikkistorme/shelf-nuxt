@@ -28,7 +28,7 @@
 <script>
 import { storeToRefs } from "pinia";
 import { useModalStore } from "~/store/ModalStore";
-import { useUserStore } from "~/store/userStore";
+import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {

@@ -16,7 +16,7 @@
 
 <script>
 import { storeToRefs } from "pinia";
-import { useUserStore } from "~~/store/userStore";
+import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {
