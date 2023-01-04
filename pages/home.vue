@@ -1,4 +1,14 @@
 <template>
+  <Head>
+    <Link
+      v-for="(image, i) in inProgressBookImages"
+      :key="i"
+      rel="preload"
+      fetchpriority="high"
+      as="image"
+      :href="image"
+    />
+  </Head>
   <div
     v-if="profile?.id && getSortedShelves && inProgressShelf"
     class="home-page d-grid"

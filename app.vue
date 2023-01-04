@@ -2,14 +2,11 @@
   <div class="app-container d-flex flex-column">
     <Head>
       <Title>Shelf</Title>
-      <!-- <Link
-        v-for="(image, i) in inProgressBookImages"
-        :key="i"
-        rel="preload"
-        fetchpriority="high"
-        as="image"
-        :href="image"
-      /> -->
+      <Link rel="preconnect" href="https://fonts.gstatic.com" />
+      <Meta
+        name="description"
+        content="Shelf is a book tracking app that provides a more joyful online user experience. Shelf not only provides insight and data into users reading habits, but it also turns the private experience of reading into a community-based activity that is beautiful, delightful, and shareable."
+      />
     </Head>
     <ModalWrapper />
     <HeaderBar />
@@ -21,22 +18,14 @@
 </template>
 
 <script>
-import { useBookStore } from "~/store/BookStore";
 import { useShelfStore } from "~/store/ShelfStore";
 import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {
-    const bookStore = useBookStore();
     const shelfStore = useShelfStore();
     const userStore = useUserStore();
     const userAuth = useSupabaseUser();
-
-    const inProgressBookImages = computed(() => {
-      return bookStore.inProgressBooks
-        .filter((book) => book?.cover)
-        .map((book) => book.cover);
-    });
 
     const fillStore = async () => {
       if (!shelfStore.shelves?.length > 0) {
@@ -56,7 +45,6 @@ export default {
     fillStore();
 
     return {
-      inProgressBookImages,
       userAuth,
     };
   },
