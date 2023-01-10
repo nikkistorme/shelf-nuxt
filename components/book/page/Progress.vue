@@ -1,5 +1,5 @@
 <template>
-  <div class="book-page__progress d-flex gap-3 ai-center pb-1">
+  <div class="book-page__progress d-flex gap-1 ai-center pb-1">
     <div class="d-flex ai-center gap-1">
       <IconProgressCircle :percent="percentComplete" />
       <div class="d-flex flex-column">

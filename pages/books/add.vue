@@ -27,7 +27,11 @@
         class="add-book_upload-method d-flex ai-end gap-1"
       >
         <InputDefault id="cover-url" v-model="coverURL" type="text" />
-        <ButtonDefault type="button" @click="uploadImageURL(coverURL)">
+        <ButtonDefault
+          type="button"
+          @click="uploadImageURL(coverURL)"
+          :disabled="!coverURL.length"
+        >
           Add image
         </ButtonDefault>
       </div>
@@ -100,10 +104,9 @@ export default {
     definePageMeta({
       middleware: ["user-auth"],
     });
-    let loading = ref(false);
 
     const bookStore = useBookStore();
-    const { bookToAdd } = storeToRefs(bookStore);
+    const { bookToAdd, loading } = storeToRefs(bookStore);
 
     if (!bookToAdd.value) bookToAdd.value = bookSchema();
 

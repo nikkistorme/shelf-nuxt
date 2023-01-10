@@ -1,19 +1,26 @@
 <template>
-  <div class="bp-shelves w-100 d-flex flex-column gap-1">
-    <div class="d-flex ai-center gap-half">
-      <h3>Shelves</h3>
-      <IconEditPencil class="cursor-pointer" @click="beginShelvesEdit" />
-    </div>
-    <div class="d-flex ai-center gap-half">
-      <ul
-        v-if="selectedShelves?.length"
-        class="selected-shelves d-flex flex-wrap gap-half"
+  <div class="bp-shelves d-flex gap-half">
+    <ul
+      v-if="selectedShelves?.length"
+      class="selected-shelves d-flex flex-wrap gap-half"
+    >
+      <li v-for="(s, i) in selectedShelves" :key="i" class="selected-shelf">
+        <NuxtLink :to="`/shelves/${s.id}`">{{ s.name }}</NuxtLink>
+      </li>
+    </ul>
+
+    <div class="w-fit-content" @click="beginShelvesEdit">
+      <ButtonInline
+        v-if="!selectedShelves?.length"
+        color="primary"
+        class="add-to-shelf-btn"
       >
-        <li v-for="(s, i) in selectedShelves" :key="i" class="selected-shelf">
-          <NuxtLink :to="`/shelves/${s.id}`">{{ s.name }}</NuxtLink>
-        </li>
-      </ul>
+        Add to shelves
+      </ButtonInline>
+
+      <IconEditPencil v-else class="cursor-pointer" />
     </div>
+
     <ModalGeneral class="edit-shelf-modal" v-if="editingShelves">
       <InputMultiSelect
         legend="Shelves"
@@ -21,10 +28,11 @@
         :options="options"
         class="mb-1"
       />
+
       <div class="buttons d-flex jc-between">
-        <ButtonDefault @click="cancelShelfEdit" color="red"
-          >Cancel</ButtonDefault
-        >
+        <ButtonDefault @click="cancelShelfEdit" color="red">
+          Cancel
+        </ButtonDefault>
         <ButtonDefault @click="saveBookShelves">Apply</ButtonDefault>
       </div>
     </ModalGeneral>
@@ -47,11 +55,13 @@ export default {
     const { shelves } = storeToRefs(shelfStore);
 
     const selectedShelves = computed(() => {
-      return shelves.value.filter((s) =>
-        userBook.value.shelves.find(
-          (s_id) => s.id.toString() === s_id.toString()
+      return shelves.value
+        .filter((s) =>
+          userBook.value.shelves.find(
+            (s_id) => s.id.toString() === s_id.toString()
+          )
         )
-      );
+        .sort((a, b) => a.name > b.name);
     });
 
     const selectedShelvesIds = ref([...userBook.value.shelves]);
@@ -130,7 +140,8 @@ export default {
 </script>
 
 <style scoped>
-.selected-shelf {
+.selected-shelf,
+.add-to-shelf-btn {
   padding: 0 var(--spacing-size-half);
   border-radius: var(--border-radius-2);
   background-color: var(--color-gray);

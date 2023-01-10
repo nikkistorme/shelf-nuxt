@@ -1,22 +1,18 @@
 <template>
-  <div class="book-page__title">
-    <h1>{{ props.book.title }}</h1>
-  </div>
+  <h1 class="book-page__title">{{ userBook.title }}</h1>
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
+import { useBookStore } from "~/store/BookStore";
+
 export default {
-  props: {
-    book: Object,
-  },
-  setup(props) {
-    async function updateField() {
-      console.log("🚀 ~ props.book", props.book);
-    }
+  setup() {
+    const bookStore = useBookStore();
+    const { userBook } = storeToRefs(bookStore);
 
     return {
-      props,
-      updateField,
+      userBook,
     };
   },
 };
@@ -24,6 +20,13 @@ export default {
 
 <style>
 .book-page__title {
+  text-align: center;
   font-size: var(--font-size-2);
+}
+
+@media (min-width: 768px) {
+  .book-page__title {
+    text-align: left;
+  }
 }
 </style>
