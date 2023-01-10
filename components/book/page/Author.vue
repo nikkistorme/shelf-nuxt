@@ -1,5 +1,5 @@
 <template>
-  <h2 class="book-page__author">by {{ props.book.author }}</h2>
+  <p class="book-page__author">{{ props.book.author }}</p>
 </template>
 
 <script>
@@ -21,9 +21,7 @@ export default {
 </script>
 
 <style>
-@media (min-width: 768px) {
-  .book-page__author {
-    font-weight: normal;
-  }
+.book-page__author {
+  text-align: center;
 }
 </style>

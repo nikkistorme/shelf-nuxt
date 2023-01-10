@@ -48,7 +48,7 @@ export default {
   min-height: calc(100vh - var(--header-height));
   max-width: var(--content-max-width);
   margin: var(--spacing-size-1);
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 @media (min-width: 768px) {
   .app-content {

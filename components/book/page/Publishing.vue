@@ -1,5 +1,6 @@
 <template>
   <p class="book-page__publishing">
+    |
     <span v-if="props.book.published">{{ publishedDate }} by </span
     >{{ publisher }}
   </p>

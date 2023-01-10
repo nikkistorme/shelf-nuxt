@@ -1,23 +1,23 @@
 <template>
-  <div class="book-page__pages pencil-hover-container d-flex flex-column">
-    <div class="d-flex gap-1">
-      <p>{{ book.total_pages }} pages</p>
-    </div>
-  </div>
+  <p>{{ totalPages }} pages</p>
 </template>
 
 <script>
+import { storeToRefs } from "pinia";
+import { useBookStore } from "~/store/BookStore";
+
 export default {
-  props: {
-    book: Object,
+  setup() {
+    const bookStore = useBookStore();
+    const { book, userBook } = storeToRefs(bookStore);
+
+    let totalPages = ref(book.value.total_pages);
+    if (userBook?.value?.total_pages)
+      totalPages.value = userBook.value.total_pages;
+
+    return {
+      totalPages,
+    };
   },
-  setup() {},
 };
 </script>
-
-<style>
-.book-page__pages-edit-confirm {
-  height: 30px;
-  width: 30px;
-}
-</style>

@@ -77,7 +77,6 @@ export const useShelfStore = defineStore("ShelfStore", {
       if (!this.shelves.find((shelf) => shelf?.unread_shelf))
         shelvesToCreate.push("unread_shelf");
       if (!shelvesToCreate.length) return;
-      console.log("🚀 ~ shelvesToCreate", shelvesToCreate);
       try {
         await createNecessaryShelves(shelvesToCreate);
         return;

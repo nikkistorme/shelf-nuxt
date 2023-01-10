@@ -1,49 +1,25 @@
 <template>
   <div class="book-page d-flex jc-center">
     <Title>{{ userBook ? userBook.title : book.title }}</Title>
+
     <div class="book-page__content w-100">
-      <BookPageEditInfo
-        v-if="userAuth && userBook?.id"
-        class="book-page__edit-icon"
-      />
-      <div class="book-page__cover-container d-flex flex-column w-100">
-        <div class="book-page__cover d-flex jc-center mb-2">
-          <nuxt-img
-            v-if="coverImage"
-            :src="coverImage"
-            :alt="coverAltText"
-            format="webp"
-          />
-          <div
-            v-else
-            class="book-page__cover-placeholder d-flex flex-column jc-between ai-center p-1"
-          >
-            <h5>{{ userBook.title }}</h5>
-            <p>{{ userBook.author }}</p>
-          </div>
-        </div>
-        <ButtonDefault
-          v-if="userAuth && !userBook?.id"
-          @click="addBookToLibrary"
-        >
-          Add to library
-        </ButtonDefault>
+      <div class="d-flex flex-column gap-half">
+        <BookPageCover />
+        <BookPageActions />
       </div>
-      <div class="book-page__base-info d-flex flex-column gap-1">
-        <BookPageTitle v-if="book?.title" :book="book" />
+
+      <div class="book-page__base-info d-flex flex-column gap-half w-100">
+        <BookPageTitle v-if="book?.title" />
         <BookPageAuthor v-if="book?.author" :book="book" />
-        <div class="d-flex ai-baseline gap-half">
-          <BookPageTotalPages
-            v-if="book?.total_pages"
-            :book="userBook?.id ? userBook : book"
-          />
-          <span>|</span>
+        <div class="d-flex jc-center ai-baseline gap-half">
+          <BookPageTotalPages v-if="book?.total_pages" />
           <BookPagePublishing v-if="book?.publisher" :book="book" />
         </div>
       </div>
-      <div class="book-page__cards d-flex flex-column">
-        <BookPageShelves v-if="userBook && shelves?.length" />
+
+      <div class="book-page__cards gap-1">
         <BookPageStatus v-if="userBook?.id" />
+        <BookPageShelves v-if="userBook && shelves?.length" />
         <div
           class="book-page__in-progress-info d-flex flex-wrap"
           v-if="userAuth && userBook?.id && userBook.status === 'in_progress'"
@@ -55,6 +31,7 @@
         <!-- TODO: Show book insights -->
         <!-- TODO: Show book history -->
       </div>
+
       <ButtonInline
         v-if="userAuth && userBook?.id"
         text="Remove from library"
@@ -81,22 +58,6 @@ export default {
     const bookStore = useBookStore();
     const { book, userBook } = storeToRefs(bookStore);
 
-    const coverImage = computed(() => {
-      if (userBook?.value?.cover) return userBook.value.cover;
-      if (book?.value?.cover) return book.value.cover;
-      return null;
-    });
-
-    const coverAltText = computed(() => {
-      if (userBook?.value?.title) return userBook.value.title;
-      if (book?.value?.title) return book.value.title;
-      return "";
-    });
-
-    async function addBookToLibrary() {
-      await bookStore.addBookToLibrary();
-    }
-
     async function removeBookFromLibrary() {
       await bookStore.removeBookFromLibrary();
     }
@@ -108,9 +69,6 @@ export default {
       userAuth,
       book,
       userBook,
-      coverImage,
-      coverAltText,
-      addBookToLibrary,
       removeBookFromLibrary,
       shelves,
     };
@@ -122,41 +80,21 @@ export default {
 .book-page__content {
   position: relative;
   display: grid;
-  gap: var(--spacing-size-2);
+  gap: var(--spacing-size-1);
   height: min-content;
   background: var(--color-white);
 }
-.book-page__edit-icon {
-  position: absolute;
-  top: var(--spacing-size-1);
-  right: var(--spacing-size-1);
-}
-.book-page__cover {
-  height: 350px;
-  max-width: 100%;
-}
-.book-page__cover img {
-  height: 100%;
-  border-radius: 5px;
-  object-fit: contain;
-  object-position: bottom;
-  box-shadow: var(--box-shadow-2);
-}
-.book-page__cover-placeholder {
-  height: 250px;
-  width: 175px;
-  border-radius: 5px;
-  background-color: var(--color-grey);
-  text-align: center;
-}
 .book-page__base-info {
   justify-self: start;
-  width: fit-content;
+  /* width: fit-content; */
 }
 .book-page__cards {
   display: grid;
-  grid-gap: var(--spacing-size-2);
   grid-auto-rows: min-content;
+  padding: var(--spacing-size-1);
+  border: var(--border-1);
+  border-radius: var(--border-radius-1);
+  box-shadow: var(--box-shadow-1);
 }
 .book-page__in-progress-info {
   column-gap: var(--spacing-size-3);

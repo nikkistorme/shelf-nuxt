@@ -129,7 +129,7 @@ export const fetchBooksForShelf = async (shelf) => {
       const { data } = await supabase
         .from("books_user")
         .select()
-        .not("status", "in", '("finished", "in_progress"))');
+        .eq("status", "unread");
       books = data;
     } else if (shelf?.finished_shelf) {
       const { data } = await supabase
