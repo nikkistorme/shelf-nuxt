@@ -1,4 +1,4 @@
-import { useShelfStore } from "~~/store/ShelfStore"
+import { useShelfStore } from "~/store/ShelfStore"
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const { id } = to.params;
@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (id) shelf = shelfStore.getShelfById(id);
 
   if (to.name === "shelves" || !shelf) {
-    await shelfStore.setActiveShelf(shelfStore.getAllBooksShelf);
+    await shelfStore.setActiveShelf(shelfStore.allBooksShelf);
     redirectURL = `/shelves/${shelfStore.activeShelf.id}`;
     console.log("shelves: Redirecting to", redirectURL);
     return navigateTo(redirectURL);

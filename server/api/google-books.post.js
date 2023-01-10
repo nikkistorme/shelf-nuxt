@@ -1,7 +1,7 @@
 import { bookSchema } from "~/services/bookService";
 
 export default defineEventHandler(async (event) => {
-  const { query, quantity } = await useBody(event);
+  const { query, quantity } = await readBody(event);
   let books = [];
 
   const baseURL = process.env.GOOGLE_BOOKS_API_URL;

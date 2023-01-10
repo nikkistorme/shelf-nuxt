@@ -6,41 +6,40 @@ import {
 
 export const bookSchema = () => {
   return {
-    author: "",
-    author_last_to_first: "",
-    average_rating: null,
-    cover: "",
-    description: "",
-    isbn: "",
-    isbn_13: "",
-    published: null,
-    published_original: null,
-    publisher: "",
     title: "",
     total_pages: null,
+    author: "",
+    description: "",
+    cover: "",
+    published: null,
+    published_original: null,
+    average_rating: null,
+    publisher: "",
+    isbn: "",
+    isbn_13: "",
   };
 };
 
 export const userBookSchema = () => {
   return {
+    title: "",
     author: "",
-    base: "",
-    changes: [],
-    cover: "",
-    current_page: null,
     description: "",
-    finished: false,
     goal: {
       startDate: "",
       targetDate: "",
       targetPage: null,
     },
-    in_progress: false,
-    minutes_per_page: null,
-    shelves: [],
-    title: "",
+    cover: "",
+    current_page: null,
     total_pages: null,
     user_id: "",
+    base: "",
+    shelves: [],
+    changes: [],
+    minutes_per_page: null,
+    status: "unread",
+    readthroughs: [],
   };
 };
 
@@ -48,7 +47,7 @@ export const addNewBook = async (book) => {
   const supabase = useSupabaseClient();
   try {
     const { data: newBook, error } = await supabase
-      .from("books")
+      .from("books_edition")
       .insert([book]);
     if (error) throw error;
     return newBook[0];
@@ -73,7 +72,7 @@ export const addBookToLibrary = async (book) => {
   newBook.user_id = userAuth.value.id;
   try {
     const { data: userBook, error: userBookError } = await supabase
-      .from("user_books")
+      .from("books_user")
       .insert([newBook]);
 
     const allBooksShelfCount = await getAllBooksShelfCount();
@@ -89,7 +88,7 @@ export const addBookToLibrary = async (book) => {
 export const fetchUserBooks = async () => {
   const supabase = useSupabaseClient();
   try {
-    const { data: books, error } = await supabase.from("user_books").select();
+    const { data: books, error } = await supabase.from("books_user").select();
     if (error) throw error;
     return books;
   } catch (error) {
@@ -101,9 +100,9 @@ export const fetchInProgressBooks = async () => {
   const supabase = useSupabaseClient();
   try {
     const { data } = await supabase
-      .from("user_books")
+      .from("books_user")
       .select()
-      .eq("in_progress", true);
+      .eq("status", "in_progress");
     return data;
   } catch (error) {
     throw error;
@@ -114,12 +113,12 @@ export const fetchBook = async (book_id) => {
   const supabase = useSupabaseClient();
   try {
     const { data: book, error: bookError } = await supabase
-      .from("books")
+      .from("books_edition")
       .select()
       .eq("id", book_id);
     if (bookError) throw bookError;
     const { data: userBook, error: userBookError } = await supabase
-      .from("user_books")
+      .from("books_user")
       .select()
       .eq("base", book_id);
     if (userBookError) throw userBookError;
@@ -133,9 +132,9 @@ export const startReadingBook = async (user_book) => {
   const supabase = useSupabaseClient();
   const change = newChange("startReadingBook", user_book);
   const bookUpdates = {
-    in_progress: true,
     current_page: 0,
     changes: [...user_book.changes, change],
+    status: "in_progress",
   };
   bookUpdates.changes.sort((a, b) => {
     return a.created > b.created ? -1 : 1;
@@ -143,7 +142,7 @@ export const startReadingBook = async (user_book) => {
   let updatedBook;
   try {
     const { data } = await supabase
-      .from("user_books")
+      .from("books_user")
       .update(bookUpdates)
       .match({ id: user_book.id });
     updatedBook = data[0];
@@ -157,7 +156,7 @@ export const updateProgress = async (user_book_id, book_updates) => {
   const supabase = useSupabaseClient();
   try {
     const { data: updatedBook, error } = await supabase
-      .from("user_books")
+      .from("books_user")
       .update(book_updates)
       .match({ id: user_book_id });
     if (error) throw error;
@@ -171,7 +170,7 @@ export const finishReadingBook = async (user_book_id, book_updates) => {
   const supabase = useSupabaseClient();
   try {
     const { data: updatedBook, error } = await supabase
-      .from("user_books")
+      .from("books_user")
       .update(book_updates)
       .match({ id: user_book_id });
     if (error) throw error;
@@ -185,7 +184,7 @@ export const updateUserBook = async (user_book_id, book_updates) => {
   const supabase = useSupabaseClient();
   try {
     const { data: updatedBook, error } = await supabase
-      .from("user_books")
+      .from("books_user")
       .update(book_updates)
       .match({ id: user_book_id });
     if (error) throw error;
@@ -199,7 +198,7 @@ export const removeBookFromLibrary = async (book_id) => {
   const supabase = useSupabaseClient();
   try {
     const { data, error } = await supabase
-      .from("user_books")
+      .from("books_user")
       .delete()
       .match({ id: book_id });
     if (error) throw error;
@@ -219,7 +218,7 @@ export const searchBooks = async (query) => {
   });
   try {
     const { data, error } = await supabase
-      .from("books")
+      .from("books_edition")
       .select()
       .textSearch("fts", paramString, {
         type: "websearch",

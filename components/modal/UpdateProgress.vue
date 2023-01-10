@@ -105,7 +105,7 @@ import { useBookStore } from "~/store/BookStore";
 import {
   progressTypeOptions as progressServiceTypeOptions,
   durationForm as progressServiceDurationForm,
-} from "~~/services/progressService";
+} from "~/services/progressService";
 import {
   getTimeString,
   HhMmDifferenceInMinutes,

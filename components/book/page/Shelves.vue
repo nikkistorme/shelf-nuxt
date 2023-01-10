@@ -1,35 +1,33 @@
 <template>
-  <div class="bp-shelves d-flex flex-wrap">
-    <div class="bp-shelves__button d-flex">
-      <IconAddBook class="bp-shelves__button-icon cursor-pointer h-100" />
-      <ButtonInline
-        class="bp-shelves__button-inline"
-        :text="!userBook?.shelves?.length ? 'Add to shelf' : ''"
-        underline
-        color="blue"
-      />
-      <select
-        id="add-book-to-shelf"
-        name="add-book-to-shelf"
-        class="bp-shelves__button-select h-100 w-100 cursor-pointer"
-      ></select>
+  <div class="bp-shelves w-100 d-flex flex-column gap-1">
+    <div class="d-flex ai-center gap-half">
+      <h3>Shelves</h3>
+      <IconEditPencil class="cursor-pointer" @click="beginShelvesEdit" />
     </div>
-    <div
-      v-for="(shelf, i) in userBook.shelves"
-      :key="i"
-      class="bp-shelves__shelf d-flex ai-center"
-    >
-      <p>
-        {{ getShelfById(shelf).name }}
-      </p>
-      <button
-        class="bp-shelves__remove button-is-container d-flex cursor-pointer"
-        type="button"
-        @click="removeFromShelf(shelf)"
+    <div class="d-flex ai-center gap-half">
+      <ul
+        v-if="selectedShelves?.length"
+        class="selected-shelves d-flex flex-wrap gap-half"
       >
-        <IconClose class="w-100 h-100" color="red" />
-      </button>
+        <li v-for="(s, i) in selectedShelves" :key="i" class="selected-shelf">
+          <NuxtLink :to="`/shelves/${s.id}`">{{ s.name }}</NuxtLink>
+        </li>
+      </ul>
     </div>
+    <ModalGeneral class="edit-shelf-modal" v-if="editingShelves">
+      <InputMultiSelect
+        legend="Shelves"
+        v-model:value="selectedShelvesIds"
+        :options="options"
+        class="mb-1"
+      />
+      <div class="buttons d-flex jc-between">
+        <ButtonDefault @click="cancelShelfEdit" color="red"
+          >Cancel</ButtonDefault
+        >
+        <ButtonDefault @click="saveBookShelves">Apply</ButtonDefault>
+      </div>
+    </ModalGeneral>
   </div>
 </template>
 
@@ -37,59 +35,107 @@
 import { storeToRefs } from "pinia";
 import { useBookStore } from "~/store/BookStore";
 import { useShelfStore } from "~/store/ShelfStore";
+import { useModalStore } from "~/store/ModalStore";
 
 export default {
   setup() {
     const bookStore = useBookStore();
-    const ShelfStore = useShelfStore();
+    const shelfStore = useShelfStore();
+    const modalStore = useModalStore();
 
     const { userBook } = storeToRefs(bookStore);
-    const { shelves } = storeToRefs(ShelfStore);
+    const { shelves } = storeToRefs(shelfStore);
 
-    function getShelfById(id) {
-      const shelfFromStore = shelves.value.find(
-        (shelf) => parseInt(shelf.id) === parseInt(id)
+    const selectedShelves = computed(() => {
+      return shelves.value.filter((s) =>
+        userBook.value.shelves.find(
+          (s_id) => s.id.toString() === s_id.toString()
+        )
       );
-      return shelfFromStore ? shelfFromStore : "";
-    }
+    });
+
+    const selectedShelvesIds = ref([...userBook.value.shelves]);
+
+    const options = computed(() => {
+      return shelves.value
+        .filter(
+          (s) =>
+            !s.all_books_shelf &&
+            !s.finished_shelf &&
+            !s.in_progress_shelf &&
+            !s.unread_shelf
+        )
+        .map((shelf) => {
+          return {
+            value: shelf.id.toString(),
+            id: `shelf-${shelf.id}`,
+            label: shelf.name,
+          };
+        });
+    });
+
+    const editingShelves = ref(false);
+    const beginShelvesEdit = () => {
+      editingShelves.value = true;
+      modalStore.openModal();
+    };
+
+    const cancelShelfEdit = () => {
+      editingShelves.value = false;
+      modalStore.closeModal();
+    };
+
+    const saveBookShelves = async () => {
+      const newShelves = selectedShelvesIds.value;
+      const oldShelves = userBook.value.shelves;
+      let removedShelves = oldShelves.filter((x) => !newShelves.includes(x));
+      let addedShelves = newShelves.filter((x) => !oldShelves.includes(x));
+
+      userBook.value.shelves = selectedShelvesIds.value;
+      await bookStore.updateUserBook(userBook.value.id, {
+        shelves: userBook.value.shelves,
+      });
+
+      for (const shelfId of removedShelves) {
+        await shelfStore.incrementShelfCount(shelfId, -1);
+      }
+      for (const shelfId of addedShelves) {
+        await shelfStore.incrementShelfCount(shelfId, 1);
+      }
+
+      editingShelves.value = false;
+      modalStore.closeModal();
+    };
+
+    const { modal } = storeToRefs(modalStore);
+    watch(modal, (newValue) => {
+      if (!newValue) {
+        editingShelves.value = false;
+      }
+    });
 
     return {
       userBook,
-      getShelfById,
+      selectedShelvesIds,
+      selectedShelves,
+      options,
+      shelves,
+      editingShelves,
+      beginShelvesEdit,
+      cancelShelfEdit,
+      saveBookShelves,
     };
   },
 };
 </script>
 
-<style>
-.bp-shelves {
-  gap: var(--spacing-size-half);
-}
-.bp-shelves__button {
-  position: relative;
-  gap: var(--spacing-size-half);
-  height: 30px;
-}
-.bp-shelves__button-icon {
-  width: fit-content;
-}
-.bp-shelves__button-inline {
-  min-width: fit-content;
-}
-.bp-shelves__button-select {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-}
-.bp-shelves__shelf {
-  gap: var(--spacing-size-half);
-  padding: 0 calc((var(--spacing-size-half)));
+<style scoped>
+.selected-shelf {
+  padding: 0 var(--spacing-size-half);
   border-radius: var(--border-radius-2);
-  border: 2px solid var(--color-primary);
+  background-color: var(--color-gray);
 }
-.bp-shelves__remove {
-  height: 13px;
-  width: 13px;
+.edit-shelf-modal {
+  min-width: 250px;
 }
 </style>

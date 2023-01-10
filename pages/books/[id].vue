@@ -8,7 +8,12 @@
       />
       <div class="book-page__cover-container d-flex flex-column w-100">
         <div class="book-page__cover d-flex jc-center mb-2">
-          <img v-if="coverImage" :src="coverImage" :alt="coverAltText" />
+          <nuxt-img
+            v-if="coverImage"
+            :src="coverImage"
+            :alt="coverAltText"
+            format="webp"
+          />
           <div
             v-else
             class="book-page__cover-placeholder d-flex flex-column jc-between ai-center p-1"
@@ -23,54 +28,48 @@
         >
           Add to library
         </ButtonDefault>
-        <ButtonDefault
-          v-if="userAuth && userBook?.id && !userBook.in_progress"
-          @click="startReadingBook"
-        >
-          Start reading
-        </ButtonDefault>
-        <ButtonInline
-          v-if="userAuth && userBook?.id"
-          text="Remove from library"
-          color="red"
-          underline
-          @click="removeBookFromLibrary"
-        />
       </div>
       <div class="book-page__base-info d-flex flex-column gap-1">
         <BookPageTitle v-if="book?.title" :book="book" />
-        <BookPageAuthor :book="book" />
+        <BookPageAuthor v-if="book?.author" :book="book" />
         <div class="d-flex ai-baseline gap-half">
-          <BookPageTotalPages :book="userBook?.id ? userBook : book" />
+          <BookPageTotalPages
+            v-if="book?.total_pages"
+            :book="userBook?.id ? userBook : book"
+          />
           <span>|</span>
-          <BookPagePublishing v-if="book.publisher" :book="book" />
+          <BookPagePublishing v-if="book?.publisher" :book="book" />
         </div>
       </div>
       <div class="book-page__cards d-flex flex-column">
         <BookPageShelves v-if="userBook && shelves?.length" />
-        <div class="book-page__in-progress-info d-flex flex-wrap">
-          <BookPageProgress
-            v-if="userAuth && userBook?.id && userBook.in_progress"
-            :book="userBook"
-          />
-          <BookPageGoal
-            v-if="userAuth && userBook?.id && userBook.in_progress"
-            :book="userBook"
-            class="py-1"
-          />
+        <BookPageStatus v-if="userBook?.id" />
+        <div
+          class="book-page__in-progress-info d-flex flex-wrap"
+          v-if="userAuth && userBook?.id && userBook.status === 'in_progress'"
+        >
+          <BookPageProgress :book="userBook" />
+          <BookPageGoal :book="userBook" class="py-1" />
         </div>
-        <BookPageDescription :book="book" />
+        <BookPageDescription v-if="book?.description" :book="book" />
         <!-- TODO: Show book insights -->
         <!-- TODO: Show book history -->
       </div>
+      <ButtonInline
+        v-if="userAuth && userBook?.id"
+        text="Remove from library"
+        color="red"
+        underline
+        @click="removeBookFromLibrary"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { storeToRefs } from "pinia";
-import { useBookStore } from "~~/store/BookStore";
-import { useShelfStore } from "~~/store/ShelfStore";
+import { useBookStore } from "~/store/BookStore";
+import { useShelfStore } from "~/store/ShelfStore";
 
 export default {
   setup() {
@@ -98,10 +97,6 @@ export default {
       await bookStore.addBookToLibrary();
     }
 
-    async function startReadingBook() {
-      await bookStore.startReadingBook(userBook.value);
-    }
-
     async function removeBookFromLibrary() {
       await bookStore.removeBookFromLibrary();
     }
@@ -116,7 +111,6 @@ export default {
       coverImage,
       coverAltText,
       addBookToLibrary,
-      startReadingBook,
       removeBookFromLibrary,
       shelves,
     };

@@ -20,12 +20,16 @@ export default defineNuxtConfig({
     head: {
       title: 'Shelf',
       link: [
-        { rel: 'icon', href: '/favicon.svg' },
-        { rel: 'preconnect', href: 'https://whzpxqepohgfixqojtca.supabase.co'}
+        { rel: 'icon', href: 'favicon.svg' },
+        { rel: 'preconnect', href: 'https://whzpxqepohgfixqojtca.supabase.co'},
+        { rel: 'preconnect', href: 'https://imagedelivery.net'},
       ],
       meta: [
         { name: "description", content: "Shelf is a book tracking app that provides a more joyful online user experience. Shelf not only provides insight and data into users reading habits, but it also turns the private experience of reading into a community-based activity that is beautiful, delightful, and shareable." }
       ],
     },
   },
+  image: {
+    baseURL: 'https://imagedelivery.net',
+  }
 })

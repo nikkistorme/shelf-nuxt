@@ -1,5 +1,8 @@
 <template>
-  <p class="book-page__publishing">{{ publishedDate }} by {{ publisher }}</p>
+  <p class="book-page__publishing">
+    <span v-if="props.book.published">{{ publishedDate }} by </span
+    >{{ publisher }}
+  </p>
 </template>
 
 <script>
@@ -16,6 +19,7 @@ export default {
     return {
       publishedDate,
       publisher,
+      props,
     };
   },
 };
