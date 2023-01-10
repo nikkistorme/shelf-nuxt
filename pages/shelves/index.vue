@@ -9,30 +9,13 @@
 </template>
 
 <script>
-import { useUserStore } from "~/store/UserStore";
-
 export default {
   setup() {
     definePageMeta({
       middleware: ["user-auth", "shelves"],
     });
 
-    const client = useSupabaseClient();
-    const user = useSupabaseUser();
-    const router = useRouter();
-    const userStore = useUserStore();
-
-    async function logOut() {
-      userStore.setUsersLoading(true);
-      await client.auth.signOut();
-      router.push("/");
-      userStore.setUsersLoading(false);
-    }
-
-    return {
-      logOut,
-      user,
-    };
+    return {};
   },
 };
 </script>

@@ -11,7 +11,9 @@
         <IconArrowDown class="up" />
         <IconArrowDown class="down" />
       </div>
-      <h2 class="shelf-title__name">{{ activeShelf.name }}</h2>
+      <h2 v-if="activeShelf?.name" class="shelf-title__name">
+        {{ activeShelf.name }}
+      </h2>
     </div>
     <IconEditPencil
       v-show="!editName"
@@ -86,27 +88,6 @@ export default {
     };
   },
 };
-
-// export default {
-//   methods: {
-//     toggleShelfSelect() {
-//       this.toggleModal();
-//       this.toggleLibraryShelfSelectOpen();
-//       if (this.createShelfFormOpen) {
-//         this.createShelfFormOpen = false;
-//       }
-//     },
-//     toggleCreateShelfForm() {
-//       this.newShelfName = "";
-//       this.createShelfFormOpen = !this.createShelfFormOpen;
-//     },
-//     async createShelf() {
-//       const newShelf = await this.addShelf(this.newShelfName);
-//       this.setActiveShelf(newShelf);
-//       this.newShelfName = "";
-//     },
-//   },
-// };
 </script>
 
 <style>
@@ -128,11 +109,6 @@ export default {
 .shelf-title__select-icon .up {
   transform: rotate(180deg);
 }
-/* .shelf-title__shelf-dropdown {
-  left: var(--spacing-size-1);
-  top: 40px;
-  width: calc(240px + (var(--spacing-size-1) * 2));
-} */
 .shelf-title__dropdown-list {
   max-height: 450px;
   overflow-y: auto;

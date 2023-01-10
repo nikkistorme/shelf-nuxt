@@ -13,9 +13,9 @@
         :href="image"
       />
     </Head>
-    <div class="d-flex flex-column gap-2">
+    <div v-if="inProgressShelf.book_count > 0" class="d-flex flex-column gap-2">
       <h2>Continue reading</h2>
-      <HomeShelf v-if="inProgressShelf" />
+      <HomeShelf />
     </div>
     <div class="d-flex flex-column gap-2">
       <h2>Jump to a shelf</h2>

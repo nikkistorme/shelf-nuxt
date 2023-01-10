@@ -4,8 +4,8 @@ export const updateSchema = () => {
     oldValue: null,
     newValue: null,
     newValueSoft: null,
-  }
-}
+  };
+};
 
 export const changeSchema = () => {
   let change = {
@@ -14,40 +14,40 @@ export const changeSchema = () => {
     updates: [],
   };
   return change;
-}
+};
 
-const getNewUpdate = (action, field, book, misc=null) => {
+const getNewUpdate = (action, field, book, misc = null) => {
   let newUpdate = updateSchema();
   newUpdate.field = field;
   switch (field) {
     case "in_progress":
-      newUpdate.oldValue = book.in_progress;
-      if (action === 'startReadingBook') {
+      newUpdate.oldValue = book.status;
+      if (action === "startReadingBook") {
         newUpdate.newValue = true;
-      } else if (action === 'finishReadingBook') {
+      } else if (action === "finishReadingBook") {
         newUpdate.newValue = false;
       }
       break;
     case "current_page":
       newUpdate.oldValue = book.current_page ? book.current_page : 0;
-      if (action === 'startReadingBook') {
+      if (action === "startReadingBook") {
         newUpdate.newValue = 0;
-      } else if (['updateProgress', 'finishReadingBook'].includes(action)) {
+      } else if (["updateProgress", "finishReadingBook"].includes(action)) {
         newUpdate.newValue = misc.endAt;
       }
       break;
-    case 'duration':
+    case "duration":
       newUpdate.newValue = misc.duration;
       break;
-    case 'goal':
+    case "goal":
       newUpdate.oldValue = misc.oldGoal;
-      if (action === 'setGoal') {
+      if (action === "setGoal") {
         newUpdate.newValue = {
           targetPage: misc.targetPage,
           goalDate: misc.goalDate,
           startDate: new Date().toISOString(),
-        }
-      } else if (action === 'removeGoal') {
+        };
+      } else if (action === "removeGoal") {
         newUpdate.newValue = null;
       }
       break;
@@ -67,20 +67,29 @@ const getNewUpdate = (action, field, book, misc=null) => {
       break;
   }
   return newUpdate;
-}
+};
 
-export const newChange = (action, book, misc=null) => {
+export const newChange = (action, book, misc = null) => {
   let newChange = changeSchema();
   newChange.action = action;
   newChange.created = new Date().toISOString();
   switch (action) {
     case "startReadingBook":
-      newChange.updates.push(getNewUpdate("startReadingBook", "in_progress", book));
-      newChange.updates.push(getNewUpdate("startReadingBook", "current_page", book));
+      newChange.updates.push(
+        getNewUpdate("startReadingBook", "in_progress", book)
+      );
+      newChange.updates.push(
+        getNewUpdate("startReadingBook", "current_page", book)
+      );
       break;
     case "updateProgress":
-      newChange.updates.push(getNewUpdate("updateProgress", "current_page", book, misc));
-      if (misc.duration) newChange.updates.push(getNewUpdate("updateProgress", "duration", book, misc));
+      newChange.updates.push(
+        getNewUpdate("updateProgress", "current_page", book, misc)
+      );
+      if (misc.duration)
+        newChange.updates.push(
+          getNewUpdate("updateProgress", "duration", book, misc)
+        );
       break;
     case "setGoal":
       newChange.updates.push(getNewUpdate("setGoal", "goal", book, misc));
@@ -89,11 +98,23 @@ export const newChange = (action, book, misc=null) => {
       newChange.updates.push(getNewUpdate("removeGoal", "goal", book, misc));
       break;
     case "finishReadingBook":
-      newChange.updates.push(getNewUpdate("finishReadingBook", "current_page", book, misc));
-      newChange.updates.push(getNewUpdate("finishReadingBook", "in_progress", book, misc));
-      newChange.updates.push(getNewUpdate("finishReadingBook", "finished", book));
-      if (misc.duration) newChange.updates.push(getNewUpdate("finishReadingBook", "duration", book, misc));
-      if (misc.oldGoal) newChange.updates.push(getNewUpdate("finishReadingBook", "goal", book, misc));
+      newChange.updates.push(
+        getNewUpdate("finishReadingBook", "current_page", book, misc)
+      );
+      newChange.updates.push(
+        getNewUpdate("finishReadingBook", "in_progress", book, misc)
+      );
+      newChange.updates.push(
+        getNewUpdate("finishReadingBook", "finished", book)
+      );
+      if (misc.duration)
+        newChange.updates.push(
+          getNewUpdate("finishReadingBook", "duration", book, misc)
+        );
+      if (misc.oldGoal)
+        newChange.updates.push(
+          getNewUpdate("finishReadingBook", "goal", book, misc)
+        );
       break;
     case "updateCover":
       newChange.updates.push(getNewUpdate("updateCover", "cover", book, misc));
@@ -105,7 +126,7 @@ export const newChange = (action, book, misc=null) => {
       break;
   }
   return newChange;
-}
+};
 
 export const newChangeFromForm = (action, book, form) => {
   let newChange = changeSchema();
@@ -116,10 +137,10 @@ export const newChangeFromForm = (action, book, form) => {
       break;
   }
   return newChange;
-}
+};
 
 export const sortChanges = (changes) => {
   return changes.sort((a, b) => {
     return a.created > b.created ? -1 : 1;
   });
-}
+};

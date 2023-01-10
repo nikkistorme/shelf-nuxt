@@ -10,7 +10,7 @@
         :src="props.book.cover"
         :alt="props.book.title"
         format="webp"
-        sizes="sm:125px"
+        sizes="sm:125px md:175px lg:250px"
       />
       <div
         v-else

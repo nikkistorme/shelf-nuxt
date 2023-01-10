@@ -26,7 +26,7 @@
 
 <script>
 import { storeToRefs } from "pinia";
-import { pagesReadToday as statsPagesToday } from "~~/services/statsService";
+import { pagesReadToday as statsPagesToday } from "~/services/statsService";
 import { useModalStore } from "~/store/ModalStore";
 
 export default {

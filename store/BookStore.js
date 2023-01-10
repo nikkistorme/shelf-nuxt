@@ -13,11 +13,6 @@ import {
   removeBookFromLibrary,
 } from "~/services/bookService";
 
-import {
-  getInProgressShelfCount,
-  updateInProgressShelfCount,
-} from "~/services/shelfService";
-
 export const useBookStore = defineStore("BookStore", {
   state: () => ({
     userBooks: [],
@@ -28,10 +23,14 @@ export const useBookStore = defineStore("BookStore", {
   }),
   getters: {
     inProgressBooks() {
-      return this.userBooks.filter((book) => book.in_progress);
+      if (!this.userBooks?.length > 0) return [];
+      return (
+        this.userBooks.filter((book) => book.status === "in_progress") || []
+      );
     },
     getBookById(id) {
-      return this.userBooks.find((book) => book.id === id);
+      if (!this.userBooks?.length > 0) return null;
+      return this.userBooks.find((book) => book.id === id) || null;
     },
     getUserBooksOnShelf() {
       return (shelf) => {
@@ -39,16 +38,19 @@ export const useBookStore = defineStore("BookStore", {
         if (shelf?.all_books_shelf) {
           return this.userBooks;
         } else if (shelf?.finished_shelf) {
-          return this.userBooks.filter((book) => book.finished);
+          return this.userBooks.filter((book) => book.status === "finished");
         } else if (shelf?.in_progress_shelf) {
-          return this.userBooks.filter((book) => book.in_progress);
+          return this.userBooks.filter((book) => book.status === "in_progress");
         } else if (shelf?.unread_shelf) {
           return this.userBooks.filter(
-            (book) => !book.finished && !book.in_progress
+            (book) =>
+              !book.readthroughs?.length && !book.status !== "in_progress"
           );
         } else {
           return this.userBooks.filter((book) =>
-            book.shelves?.includes(shelf.id)
+            book.shelves?.find(
+              (s_id) => s_id.toString() === shelf.id.toString()
+            )
           );
         }
       };
@@ -124,13 +126,8 @@ export const useBookStore = defineStore("BookStore", {
       let updatedBook;
       try {
         updatedBook = await startReadingBook(user_book);
-        const inProgressShelfCount = await getInProgressShelfCount();
-        const inProgressShelf = await updateInProgressShelfCount(
-          inProgressShelfCount
-        );
         const shelfStore = useShelfStore();
-        shelfStore.shelves.filter((shelf) => shelf.id !== inProgressShelf.id);
-        shelfStore.shelves.push(inProgressShelf);
+        shelfStore.updateInProgressShelfCount();
       } catch (error) {
         this.loading = false;
         throw error;
@@ -169,16 +166,10 @@ export const useBookStore = defineStore("BookStore", {
       let updatedBook;
       try {
         updatedBook = await updateUserBook(user_book_id, book_updates);
-
-        const inProgressShelfCount = await getInProgressShelfCount();
-        const inProgressShelf = await updateInProgressShelfCount(
-          inProgressShelfCount
-        );
-
         const shelfStore = useShelfStore();
-        shelfStore.shelves.filter((shelf) => shelf.id !== inProgressShelf.id);
-        shelfStore.shelves.push(inProgressShelf);
+        shelfStore.updateInProgressShelfCount();
       } catch (error) {
+        this.loading = false;
         throw error;
       }
       if (updatedBook?.id) this.userBook = updatedBook;
@@ -200,6 +191,11 @@ export const useBookStore = defineStore("BookStore", {
       let updatedBook;
       try {
         updatedBook = await updateUserBook(user_book_id, book_updates);
+
+        if (book_updates?.status) {
+          const shelfStore = useShelfStore();
+          shelfStore.updateInProgressShelfCount();
+        }
       } catch (error) {
         throw error;
       }

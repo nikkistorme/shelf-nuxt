@@ -108,10 +108,10 @@ const sortByPercentComplete = (a, b, descending) => {
   let aPercentComplete = 0;
   let bPercentComplete = 0;
 
-  if (!a.finished && !a.finishedDate) {
+  if (!a.readthroughs?.length > 0) {
     aPercentComplete = a.readPages / a.totalPages;
   }
-  if (!b.finished && !b.finishedDate) {
+  if (!b.readthroughs?.length > 0) {
     bPercentComplete = b.readPages / b.totalPages;
   }
 

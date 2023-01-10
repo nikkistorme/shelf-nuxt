@@ -6,16 +6,17 @@
     @click="clickAction"
   >
     {{ text }}
+    <slot />
   </button>
 </template>
 
 <script>
 export default {
   props: {
-    text: { type: String, default: "Button" },
+    text: { type: String, default: "" },
     clickAction: { type: Function, default: () => {} },
     underline: { type: Boolean, default: false },
-    color: { type: String, default: "" },
+    color: { type: String, default: "primary" },
   },
 };
 </script>
@@ -40,7 +41,8 @@ export default {
 .inline-button.green {
   color: var(--color-green);
 }
-.inline-button.blue {
+.inline-button.blue,
+.inline-button.primary {
   color: var(--color-primary);
 }
 .inline-button.red {

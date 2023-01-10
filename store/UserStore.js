@@ -12,16 +12,12 @@ export const useUserStore = defineStore("UserStore", {
     loading: false,
   }),
   actions: {
-    setUsersLoading(loading) {
-      this.loading = loading;
-    },
     async signInWithPassword(email, password) {
       this.loading = true;
       try {
         await signInWithPassword(email, password);
         const profile = await getProfile();
         this.profile = profile;
-        // console.log("user profile set to:", this.profile);
       } catch (error) {
         this.loading = false;
         throw error;
@@ -46,7 +42,6 @@ export const useUserStore = defineStore("UserStore", {
       try {
         const profile = await getProfile();
         this.profile = profile;
-        // console.log("user profile set to:", this.profile);
       } catch (error) {
         this.loading = false;
         throw error;

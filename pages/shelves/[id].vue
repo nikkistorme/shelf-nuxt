@@ -37,7 +37,7 @@ import { useModalStore } from "~~/store/ModalStore";
 import {
   sortShelfByMethod,
   filterBooksBySearchTerm,
-} from "~~/services/sortService";
+} from "~/services/sortService";
 
 export default {
   setup() {
@@ -49,15 +49,15 @@ export default {
     const { activeShelf } = storeToRefs(shelfStore);
 
     const bookStore = useBookStore();
-    const booksOnActiveShelf = computed(() => {
-      const unsorted = bookStore.getUserBooksOnShelf(activeShelf.value);
-      return unsorted.sort((a, b) =>
-        sortShelfByMethod(a, b, activeShelf.value)
-      );
-    });
     const booksSortedAndFiltered = computed(() => {
       let books = bookStore.getUserBooksOnShelf(activeShelf.value);
       books.sort((a, b) => sortShelfByMethod(a, b, activeShelf.value));
+      if (books?.length !== activeShelf.value.book_count) {
+        activeShelf.value.book_count = books.length;
+        shelfStore.setShelfProperties(activeShelf.value.id, {
+          book_count: books.length,
+        });
+      }
       return filterBooksBySearchTerm(books, searchTerm.value);
     });
 
@@ -79,7 +79,6 @@ export default {
 
     return {
       activeShelf,
-      booksOnActiveShelf,
       booksSortedAndFiltered,
       sortingShelf,
       openShelfSortModal,

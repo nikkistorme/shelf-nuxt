@@ -1,8 +1,8 @@
-const getProgressChanges = (changes) => {
+const getProgressChanges = (changes: [ { action: '', updates: [] } ]) => {
   return changes.filter((change) => ["updateProgress", "finishReadingBook"].includes(change.action));
 };
 
-const getChangesWithDuration = (changes) => {
+const getChangesWithDuration = (changes: string | any[]) => {
   if (changes?.length) {
     const progressChanges = getProgressChanges(changes);
     const durationChanges = progressChanges.filter((change) => {
@@ -15,7 +15,7 @@ const getChangesWithDuration = (changes) => {
   }
 };
 
-export const dateIsToday = (date_in_question) => {
+export const dateIsToday = (date_in_question: string | number | Date) => {
   const today = new Date();
   const changeDate = new Date(date_in_question);
   return (
@@ -25,16 +25,16 @@ export const dateIsToday = (date_in_question) => {
   );
 };
 
-export const pagesReadToday = (books) => {
+export const pagesReadToday = (books: any[]) => {
   let pages = 0;
   books.forEach((book) => {
     if (book.changes?.length) {
       const todayChanges = book.changes.filter(
-        (change) =>
+        (change: { created: any; action: string; }) =>
           dateIsToday(change.created) &&
-          (change.action === "updatePage" || change.action === "finishReadingBook")
+          (change.action === "updateProgress" || change.action === "finishReadingBook")
       );
-      todayChanges.forEach((change) => {
+      todayChanges.forEach((change: { updates: any[]; }) => {
         const pageUpdate = change.updates.find((update) => update.field === 'current_page');
         pages += pageUpdate.newValue - pageUpdate.oldValue;
       });
@@ -43,8 +43,8 @@ export const pagesReadToday = (books) => {
   return pages;
 }
 
-export const getNewMinutesPerPage = (changes) => {
-  let pagesPerMinData = [];
+export const getNewMinutesPerPage = (changes: any) => {
+  let pagesPerMinData: number[] = [];
   const changesWithDuration = getChangesWithDuration(changes);
   changesWithDuration.forEach((change) => {
     const currentPageUpdate = change.updates.find((update) => update.field === 'current_page');
@@ -62,7 +62,7 @@ export const getNewMinutesPerPage = (changes) => {
   } else return null;
 }
 
-export const getGoalPace = (book) => {
+export const getGoalPace = (book: { goal: { targetPage: number; goalDate: string | number | Date; }; current_page: number; minutes_per_page: any; }) => {
   const pagesRemaining = book.goal.targetPage - book.current_page;
   const today = new Date();
   const goalDate = new Date(book.goal.goalDate);
