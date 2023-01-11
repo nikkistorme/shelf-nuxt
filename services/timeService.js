@@ -75,7 +75,7 @@ export const dateWithFormatToTimestampz = (date, format) => {
       if (day[0] === "0") {
         day = (parseInt(day) + 1).toString();
       }
-      dateObject = new Date(`${year}-${month}-${day}`);
+      dateObject = new Date(`${year}-${month}-${day}`.replace(/-/g, "/"));
       break;
     default:
       break;

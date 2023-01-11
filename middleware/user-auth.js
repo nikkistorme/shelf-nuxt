@@ -21,6 +21,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // console.log('auth: Redirecting to /');
     return navigateTo("/");
   } else {
-    console.log("auth: No redirect");
+    // console.log("auth: No redirect");
   }
 });

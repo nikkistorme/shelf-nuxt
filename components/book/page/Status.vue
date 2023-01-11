@@ -1,6 +1,9 @@
 <template>
   <div class="bp-status">
-    <div class="d-flex ai-center gap-half" @click="beginChangeStatus">
+    <div
+      class="d-flex ai-center gap-half w-fit-content cursor-pointer"
+      @click="beginChangeStatus"
+    >
       <div class="bp-status_update-icon d-flex flex-column jc-space-around">
         <IconArrowDown class="up" />
         <IconArrowDown class="down" />
@@ -199,7 +202,6 @@ export default {
         status: "finished",
       };
       try {
-        console.log("🚀 ~ bookUpdates", bookUpdates);
         await bookStore.finishReadingBook(userBook.value.id, bookUpdates);
       } catch (error) {
         throw error;

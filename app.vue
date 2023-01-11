@@ -21,7 +21,6 @@ export default {
 
     const fillStore = async () => {
       if (!shelfStore.shelves?.length > 0) {
-        console.log("Shelf Store empty, fetching shelves");
         shelfStore.fetchShelves();
       }
     };
