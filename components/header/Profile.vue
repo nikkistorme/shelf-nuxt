@@ -21,7 +21,7 @@
       <div v-if="userStore?.profile?.id" class="d-flex flex-column p-1">
         <NuxtLink to="/account" @click="toggleDropdown">Account</NuxtLink>
         <hr class="my-1" />
-        <ButtonInline text="Sign out" @click="signOut" />
+        <ButtonInline @click="signOut">Sign out</ButtonInline>
       </div>
       <div v-else class="d-flex flex-column p-1">
         <NuxtLink to="/" @click="toggleDropdown">Sign in</NuxtLink>

@@ -13,13 +13,25 @@
     >
       <div class="d-flex flex-column gap-1 p-1">
         <NuxtLink to="/home" @click="toggleDropdown">Home</NuxtLink>
-        <NuxtLink to="/shelves" @click="toggleDropdown">Library</NuxtLink>
-        <NuxtLink to="/account" @click="toggleDropdown">Account</NuxtLink>
+        <NuxtLink to="/shelves" @click="toggleDropdown" v-if="userAuth"
+          >Library</NuxtLink
+        >
+        <NuxtLink to="/account" @click="toggleDropdown" v-if="userAuth"
+          >Account</NuxtLink
+        >
         <NuxtLink to="https://trello.com/b/HG9elwZ0/roadmap" target="_blank">
           Roadmap
         </NuxtLink>
         <hr />
-        <ButtonInline text="Sign out" @click="signOut" />
+        <NuxtLink
+          v-if="!userAuth"
+          to="/"
+          @click="toggleDropdown"
+          class="exempt"
+        >
+          Sign in
+        </NuxtLink>
+        <ButtonInline text="Sign out" @click="signOut" v-if="userAuth" />
       </div>
     </div>
   </div>
@@ -32,7 +44,8 @@ import { useUserStore } from "~/store/UserStore";
 
 export default {
   setup() {
-    // Account info dropdown
+    const userAuth = useSupabaseUser();
+
     const modalStore = useModalStore();
 
     const showDropdown = ref(false);
@@ -61,6 +74,7 @@ export default {
     }
 
     return {
+      userAuth,
       showDropdown,
       toggleDropdown,
       signOut,
@@ -92,7 +106,7 @@ export default {
 .mobile-navigation__dropdown.open {
   height: 230px;
 }
-.mobile-navigation__dropdown a {
+.mobile-navigation__dropdown a:not(.exempt) {
   text-decoration: none;
   color: var(--color-black);
 }
