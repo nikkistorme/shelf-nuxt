@@ -50,9 +50,12 @@
             class="add-book__results-loading"
           />
         </div>
-        <a class="add-book__manual d-flex jc-center ai-center gap-half">
+        <NuxtLink
+          to="/books/add"
+          class="add-book__manual d-flex jc-center ai-center gap-half"
+        >
           Add a book manually
-        </a>
+        </NuxtLink>
       </div>
     </div>
   </div>
@@ -175,6 +178,7 @@ export default {
   box-shadow: var(--box-shadow-1);
   overflow: hidden;
   transition: all 0.25s ease-in-out;
+  z-index: var(--z-index-add-book-button);
 }
 .add-book__options.open {
   height: 495px;
