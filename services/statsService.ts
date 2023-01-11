@@ -1,12 +1,14 @@
+import { getBooksUpdatedThisWeek } from "./bookService";
+
 const getProgressChanges = (changes: [ { action: '', updates: [] } ]) => {
   return changes.filter((change) => ["updateProgress", "finishReadingBook"].includes(change.action));
 };
 
-const getChangesWithDuration = (changes: string | any[]) => {
+const getChangesWithDuration = (changes: [ { action: '', updates: [] } ]) => {
   if (changes?.length) {
     const progressChanges = getProgressChanges(changes);
     const durationChanges = progressChanges.filter((change) => {
-      const durationUpdate = change?.updates?.find((update) => update.field === "duration");
+      const durationUpdate = change?.updates?.find((update: any) => update.field === "duration");
       return durationUpdate;
     })
     return durationChanges;
@@ -23,6 +25,13 @@ export const dateIsToday = (date_in_question: string | number | Date) => {
     today.getMonth() === changeDate.getMonth() &&
     today.getFullYear() === changeDate.getFullYear()
   );
+};
+
+export const dateIsThisWeek = (date_in_question: string | number | Date) => {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const dateInQuestionObject = new Date(date_in_question);
+  return dateInQuestionObject.valueOf() > sevenDaysAgo.valueOf();
 };
 
 export const pagesReadToday = (books: any[]) => {
@@ -47,8 +56,8 @@ export const getNewMinutesPerPage = (changes: any) => {
   let pagesPerMinData: number[] = [];
   const changesWithDuration = getChangesWithDuration(changes);
   changesWithDuration.forEach((change) => {
-    const currentPageUpdate = change.updates.find((update) => update.field === 'current_page');
-    const durationUpdate = change.updates.find((update) => update.field === 'duration');
+    const currentPageUpdate = change.updates.find((update: any) => update.field === 'current_page');
+    const durationUpdate = change.updates.find((update: any) => update.field === 'duration');
     const pagesRead = currentPageUpdate.newValue - currentPageUpdate.oldValue;
     if (pagesRead > 0 && durationUpdate.newValue > 0) {
       pagesPerMinData.push(pagesRead / durationUpdate.newValue);
@@ -80,3 +89,25 @@ export const getGoalPace = (book: { goal: { targetPage: number; goalDate: string
     leftoverMinsPerDay: leftoverMinsPerDay,
   };
 }
+
+export const getPagesThisWeek = async () => {
+  let pagesThisWeek = 0
+  let pagesToday = 0;
+  try {
+    const booksUpdatedThisWeek = await getBooksUpdatedThisWeek();
+    booksUpdatedThisWeek?.forEach((book: any) => {
+      book.changes.forEach((c: { action: string, created: string, updates: [] }) => {
+        if (!["updateProgress", "finishReadingBook"].includes(c.action)) return;
+        if (!dateIsThisWeek(c.created)) return;
+        const pageUpdate = c.updates.find((update: { field: string }) => update.field === 'current_page') || {};
+        if (!pageUpdate) return;
+        console.log("🚀 ~ pageUpdate", pageUpdate);
+        pagesThisWeek += pageUpdate.newValue - pageUpdate.oldValue;
+        if (dateIsToday(c.created)) pagesToday += pageUpdate.newValue - pageUpdate.oldValue;
+      })
+    });
+  } catch (error) {
+    console.log("🚀 ~ error", error);
+  }
+  return [pagesToday, pagesThisWeek];
+};

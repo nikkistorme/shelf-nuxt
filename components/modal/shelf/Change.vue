@@ -3,7 +3,7 @@
     <div class="modal-shelf-change__wrapper d-flex flex-column ai-end">
       <ul class="modal-shelf-change__list w-100">
         <li
-          v-for="(shelf, i) in shelves"
+          v-for="(shelf, i) in getSortedShelves"
           :key="i"
           class="modal-shelf-change__shelf d-flex jc-between ai-center"
           :class="{ 'mb-1': i !== shelves.length - 1 }"
@@ -68,7 +68,7 @@ import { useModalStore } from "~/store/ModalStore";
 export default {
   setup() {
     const shelfStore = useShelfStore();
-    const { activeShelf, shelves } = storeToRefs(shelfStore);
+    const { activeShelf, shelves, getSortedShelves } = storeToRefs(shelfStore);
 
     const modalStore = useModalStore();
     const changeShelves = () => {
@@ -102,6 +102,7 @@ export default {
 
     return {
       shelves,
+      getSortedShelves,
       activeShelf,
       changeShelves,
       creatingNewShelf,

@@ -238,3 +238,39 @@ export const searchGoogleBooks = async (query, quantity) => {
   });
   return searchResults;
 };
+
+export const getBooksUpdatedThisWeek = async () => {
+  const supabase = useSupabaseClient();
+  const today = new Date();
+  const lastWeek = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() - 7
+  );
+  try {
+    const { data } = await supabase
+      .from("books_user")
+      .select()
+      .gte("updated_at", lastWeek.toISOString().split("T")[0]);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getBooksUpdatedToday = async () => {
+  const supabase = useSupabaseClient();
+  console.log(
+    "🚀 ~ new Date().toISOString().split(T)[0]",
+    new Date().toISOString().split("T")[0]
+  );
+  try {
+    const { data } = await supabase
+      .from("books_user")
+      .select()
+      .gte("updated_at", new Date().toISOString().split("T")[0]);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
