@@ -53,6 +53,7 @@
         <NuxtLink
           to="/books/add"
           class="add-book__manual d-flex jc-center ai-center gap-half"
+          @click="setBookSearchPopover()"
         >
           Add a book manually
         </NuxtLink>

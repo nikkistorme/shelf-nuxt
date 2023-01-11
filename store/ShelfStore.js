@@ -98,11 +98,12 @@ export const useShelfStore = defineStore("ShelfStore", {
     },
     async fetchShelves() {
       this.loading = true;
+      const userAuth = useSupabaseUser();
       let shelves;
       try {
         shelves = await fetchShelves();
         this.shelves = sortShelves(shelves);
-        await this.confirmNecessaryShelves();
+        if (!userAuth) await this.confirmNecessaryShelves();
       } catch (error) {
         this.loading = false;
         throw error;
