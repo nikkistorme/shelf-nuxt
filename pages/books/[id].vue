@@ -17,20 +17,21 @@
         </div>
       </div>
 
-      <div class="book-page__cards gap-1">
+      <div class="book-page__user gap-1" v-if="userAuth">
         <BookPageStatus v-if="userBook?.id" />
         <BookPageShelves v-if="userBook && shelves?.length" />
         <div
           class="book-page__in-progress-info d-flex flex-wrap"
-          v-if="userAuth && userBook?.id && userBook.status === 'in_progress'"
+          v-if="userBook?.status === 'in_progress'"
         >
           <BookPageProgress :book="userBook" />
           <BookPageGoal :book="userBook" class="py-1" />
         </div>
-        <BookPageDescription v-if="book?.description" :book="book" />
         <!-- TODO: Show book insights -->
         <!-- TODO: Show book history -->
       </div>
+
+      <BookPageDescription v-if="book?.description" :book="book" />
 
       <ButtonInline
         v-if="userAuth && userBook?.id"
@@ -88,7 +89,7 @@ export default {
   justify-self: start;
   /* width: fit-content; */
 }
-.book-page__cards {
+.book-page__user {
   display: grid;
   grid-auto-rows: min-content;
   padding: var(--spacing-size-1);
@@ -118,7 +119,7 @@ export default {
   .book-page__shelves {
     justify-content: start;
   }
-  .book-page__cards {
+  .book-page__user {
     grid-area: cards;
   }
   .book-page__options {
