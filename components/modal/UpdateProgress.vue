@@ -195,9 +195,8 @@ export default {
         changes: newChanges,
         minutes_per_page: getNewMinutesPerPage(newChanges),
         current_page: finalEnd,
-        in_progress: false,
-        finished: true,
         goal: null,
+        status: "finished",
       };
       await bookStore.finishReadingBook(props.book.id, bookUpdates);
       modalStore.closeModal();

@@ -28,7 +28,9 @@ export default {
   position: relative;
   height: var(--header-height);
   padding: 0 var(--spacing-root);
-  border-bottom: 2px solid var(--color-grey);
+  /* border-bottom: 2px solid var(--color-grey); */
+  background-color: var(--color-primary);
+  border-radius: 0 0 var(--border-radius-2) var(--border-radius-2);
 }
 .site-header .right {
   flex: 1;

@@ -13,11 +13,22 @@
         :href="image"
       />
     </Head>
-    <div v-if="inProgressShelf.book_count > 0" class="d-flex flex-column gap-2">
+    <div class="d-flex flex-column gap-1">
       <h2>Continue reading</h2>
-      <HomeShelf />
+      <HomeShelf v-if="inProgressShelf.book_count > 0" />
+      <div class="" v-else>
+        <p>
+          You don't have any books in progress. <br />
+          Check out your
+          <NuxtLink :to="`/shelves/${unreadShelf.id}`">
+            {{ unreadShelf.name }}
+          </NuxtLink>
+          shelf to find something to read.
+        </p>
+      </div>
     </div>
-    <div class="d-flex flex-column gap-2">
+    <HomeProgress />
+    <div class="d-flex flex-column gap-1">
       <h2>Jump to a shelf</h2>
       <div class="d-flex flex-wrap gap-half">
         <div
@@ -32,8 +43,6 @@
         </div>
       </div>
     </div>
-    <!-- <HomeGoalStats /> -->
-    <!-- <HomePredictionStats /> -->
   </div>
 </template>
 
@@ -53,7 +62,8 @@ export default {
     const { profile } = storeToRefs(userStore);
 
     const shelfStore = useShelfStore();
-    const { inProgressShelf, getSortedShelves } = storeToRefs(shelfStore);
+    const { inProgressShelf, unreadShelf, getSortedShelves } =
+      storeToRefs(shelfStore);
 
     const bookStore = useBookStore();
     const inProgressBookImages = computed(() => {
@@ -67,6 +77,7 @@ export default {
     return {
       profile,
       inProgressShelf,
+      unreadShelf,
       inProgressBookImages,
       getSortedShelves,
     };
