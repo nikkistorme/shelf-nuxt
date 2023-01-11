@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
         if (volume?.volumeInfo) {
           const book = bookSchema();
           const result = volume.volumeInfo;
-          const resultIdentifiers = result.industryIdentifiers;
+          const resultIdentifiers = result.industryIdentifiers || [];
           const isbn10 = resultIdentifiers.find((i) => i.type === "ISBN_10");
           const isbn13 = resultIdentifiers.find((i) => i.type === "ISBN_13");
           if (result?.authors?.length) book.author = result.authors[0];

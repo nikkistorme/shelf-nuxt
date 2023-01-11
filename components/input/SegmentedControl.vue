@@ -67,7 +67,7 @@ export default {
 .segmented-control__control {
   position: relative;
   border-radius: calc(var(--default-input-border-radius) - 2px);
-  z-index: var(--z-index-1);
+  z-index: var(--z-index-base);
 }
 .segmented-control__option {
   flex: 1;
@@ -81,7 +81,6 @@ export default {
   display: inline-block;
   padding: var(--spacing-size-half) 0;
   margin-right: -3px;
-  z-index: 2;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 }
