@@ -1,5 +1,5 @@
 <template>
-  <h1 class="book-page__title">{{ userBook.title }}</h1>
+  <h1 class="book-page__title">{{ book.title }}</h1>
 </template>
 
 <script>
@@ -9,9 +9,10 @@ import { useBookStore } from "~/store/BookStore";
 export default {
   setup() {
     const bookStore = useBookStore();
-    const { userBook } = storeToRefs(bookStore);
+    const { book, userBook } = storeToRefs(bookStore);
 
     return {
+      book,
       userBook,
     };
   },
