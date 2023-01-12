@@ -1,6 +1,6 @@
 <template>
   <div class="book-page d-flex jc-center">
-    <Title>{{ userBook ? userBook.title : book.title }}</Title>
+    <Title v-if="book?.title">{{ book.title }}</Title>
 
     <div class="book-page__content w-100">
       <div class="d-flex flex-column gap-half">
