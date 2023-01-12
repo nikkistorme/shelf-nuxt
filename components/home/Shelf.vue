@@ -83,14 +83,12 @@ export default {
 };
 </script>
 
-<style>
-@media (min-width: 768px) and (max-width: 1023px) {
-  .home-shelf {
-    grid-column: 1 / -1;
-  }
-}
+<style scoped>
 .home-shelf {
   width: 100%;
+  padding: var(--spacing-size-1);
+  border-radius: var(--border-radius-1);
+  background: var(--color-gray);
 }
 .home-shelf__books {
   flex-direction: column;

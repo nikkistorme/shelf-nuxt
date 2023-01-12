@@ -51,7 +51,8 @@ export default {
 }
 @media (min-width: 768px) {
   .app-content {
-    margin: var(--spacing-size-4);
+    margin: var(--spacing-size-4) auto;
+    padding: 0 var(--spacing-size-4);
   }
 }
 </style>
