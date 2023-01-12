@@ -1,10 +1,14 @@
 <template>
   <nav class="header-nav d-flex ai-center mr-2">
     <ul class="nav-list d-flex gap-1">
-      <li class="nav-list-item"><NuxtLink to="/home">Home</NuxtLink></li>
+      <li class="nav-list-item">
+        <NuxtLink to="/home">Home</NuxtLink>
+      </li>
+
       <li v-if="profile?.id" class="nav-list-item">
         <NuxtLink to="/shelves">Library</NuxtLink>
       </li>
+
       <li class="nav-list-item">
         <NuxtLink href="https://trello.com/b/HG9elwZ0/roadmap" target="_blank">
           Roadmap
@@ -29,7 +33,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @media (max-width: 767px) {
   .header-nav {
     display: none;
@@ -38,6 +42,6 @@ export default {
 }
 .nav-list-item a {
   text-decoration: none;
-  color: var(--color-black);
+  color: var(--color-white);
 }
 </style>

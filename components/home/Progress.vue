@@ -43,7 +43,7 @@ export default {
 .home-progress__list-item {
   position: relative;
   padding: var(--spacing-size-1);
-  border: 3px solid var(--color-primary);
+  border: var(--border-1);
   border-radius: var(--border-radius-1);
 }
 .home-progress__list-value {

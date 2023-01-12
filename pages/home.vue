@@ -13,7 +13,7 @@
         :href="image"
       />
     </Head>
-    <div class="d-flex flex-column gap-1">
+    <div class="home-page__continue-reading d-flex flex-column gap-1">
       <h2>Continue reading</h2>
       <HomeShelf v-if="inProgressShelf.book_count > 0" />
       <div class="" v-else>
@@ -27,8 +27,10 @@
         </p>
       </div>
     </div>
-    <HomeProgress />
-    <div class="d-flex flex-column gap-1">
+    <div class="home-page__progress">
+      <HomeProgress />
+    </div>
+    <div class="home-page__shelves d-flex flex-column gap-1">
       <h2>Jump to a shelf</h2>
       <div class="d-flex flex-wrap gap-half">
         <div
@@ -94,33 +96,21 @@ export default {
 }
 @media (min-width: 768px) {
   .home-page {
-    grid-template-columns: 1fr auto;
-  }
-}
-/* @media (min-width: 768px) {
-  .home-page {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: min-content;
+    grid-template-rows: repeat(2, 1fr);
+  }
+  .home-page__continue-reading {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+  }
+  .home-page__progress {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    margin-top: var(--spacing-size-3);
+  }
+  .home-page__shelves {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
   }
 }
-@media (min-width: 1350px) {
-  .home-page {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-areas:
-      "shelf shelf goals goals"
-      ". . prediction prediction";
-  }
-  .home-shelf {
-    grid-area: shelf;
-  }
-  .home-goals {
-    grid-area: goals;
-  }
-  .home-predictions {
-    grid-area: prediction;
-  }
-  .home-social {
-    grid-area: social;
-  }
-} */
 </style>
