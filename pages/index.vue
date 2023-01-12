@@ -1,6 +1,5 @@
 <template>
   <div v-if="!userAuth" class="login-page">
-    <h1>Shelf LP</h1>
     <div class="login-page__form-card d-flex ai-center flex-column">
       <h4 v-if="activeForm === 'sign-up'">Create Account</h4>
       <h4 v-if="activeForm === 'login'">Login</h4>

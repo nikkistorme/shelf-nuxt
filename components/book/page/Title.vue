@@ -27,6 +27,7 @@ export default {
 
 @media (min-width: 768px) {
   .book-page__title {
+    font-size: var(--font-size-3);
     text-align: left;
   }
 }
