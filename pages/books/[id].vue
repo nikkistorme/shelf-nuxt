@@ -2,22 +2,22 @@
   <div class="book-page d-flex jc-center">
     <Title v-if="book?.title">{{ book.title }}</Title>
 
-    <div class="book-page__content w-100">
-      <div class="d-flex flex-column gap-half">
+    <div :class="`book-page__content w-100 ${userAuth ? 'signed-in' : ''}`">
+      <div class="book-page__cover-area d-flex flex-column gap-half">
         <BookPageCover />
         <BookPageActions />
       </div>
 
-      <div class="book-page__base-info d-flex flex-column gap-half w-100">
+      <div class="book-page__base-area d-flex flex-column gap-half w-100">
         <BookPageTitle v-if="book?.title" />
         <BookPageAuthor v-if="book?.author" :book="book" />
-        <div class="d-flex jc-center ai-baseline gap-half">
+        <div class="book-page__base-extra d-flex ai-baseline gap-half">
           <BookPageTotalPages v-if="book?.total_pages" />
           <BookPagePublishing v-if="book?.publisher" :book="book" />
         </div>
       </div>
 
-      <div class="book-page__user gap-1" v-if="userAuth">
+      <div class="book-page__user-area gap-1" v-if="userAuth">
         <BookPageStatus v-if="userBook?.id" />
         <BookPageShelves v-if="userBook && shelves?.length" />
         <div
@@ -31,15 +31,9 @@
         <!-- TODO: Show book history -->
       </div>
 
-      <BookPageDescription v-if="book?.description" :book="book" />
-
-      <ButtonInline
-        v-if="userAuth && userBook?.id"
-        text="Remove from library"
-        color="red"
-        underline
-        @click="removeBookFromLibrary"
-      />
+      <div class="book-page__additional-area">
+        <BookPageDescription v-if="book?.description" :book="book" />
+      </div>
     </div>
   </div>
 </template>
@@ -59,10 +53,6 @@ export default {
     const bookStore = useBookStore();
     const { book, userBook } = storeToRefs(bookStore);
 
-    async function removeBookFromLibrary() {
-      await bookStore.removeBookFromLibrary();
-    }
-
     const shelfStore = useShelfStore();
     const { shelves } = storeToRefs(shelfStore);
 
@@ -70,7 +60,6 @@ export default {
       userAuth,
       book,
       userBook,
-      removeBookFromLibrary,
       shelves,
     };
   },
@@ -85,11 +74,14 @@ export default {
   height: min-content;
   background: var(--color-white);
 }
-.book-page__base-info {
+.book-page__base-area {
   justify-self: start;
   /* width: fit-content; */
 }
-.book-page__user {
+.book-page__base-extra {
+  justify-content: center;
+}
+.book-page__user-area {
   display: grid;
   grid-auto-rows: min-content;
   padding: var(--spacing-size-1);
@@ -102,28 +94,33 @@ export default {
 }
 @media (min-width: 768px) {
   .book-page__content {
-    grid-template-columns: min-content 1fr;
-    grid-template-rows: min-content 1fr;
-    grid-template-areas:
-      "cover top"
-      "cover cards"
-      ". options"
-      ". .";
     grid-gap: var(--spacing-size-3);
-    padding: var(--spacing-size-3);
   }
-  .book-page__cover-container {
+  .book-page__content:not(.signed-in) {
+    grid-template-areas:
+      "cover base"
+      "cover additional";
+  }
+  .book-page__content.signed-in {
+    grid-template-areas:
+      "cover base"
+      "cover user"
+      "cover additional";
+  }
+  .book-page__cover-area {
     grid-area: cover;
-    align-items: start;
   }
-  .book-page__shelves {
+  .book-page__base-area {
+    grid-area: base;
+  }
+  .book-page__user-area {
+    grid-area: user;
+  }
+  .book-page__additional-area {
+    grid-area: additional;
+  }
+  .book-page__base-extra {
     justify-content: start;
-  }
-  .book-page__user {
-    grid-area: cards;
-  }
-  .book-page__options {
-    grid-area: options;
   }
 }
 </style>

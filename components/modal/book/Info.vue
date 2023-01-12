@@ -14,6 +14,13 @@
         <ButtonDefault type="submit">Update total pages</ButtonDefault>
       </div>
     </form>
+    <ButtonInline
+      v-if="userAuth && userBook?.id"
+      text="Remove from library"
+      color="red"
+      underline
+      @click="removeBookFromLibrary"
+    />
   </div>
 </template>
 
@@ -47,10 +54,19 @@ export default {
       // modalStore.closeModal();
     }
 
+    const userAuth = useSupabaseUser();
+
+    const removeBookFromLibrary = async () => {
+      await bookStore.removeBookFromLibrary();
+    };
+
     return {
       props,
       newTotalPages,
       updateTotalPages,
+      userAuth,
+      userBook,
+      removeBookFromLibrary,
     };
   },
 };

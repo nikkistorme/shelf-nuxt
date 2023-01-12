@@ -45,6 +45,7 @@ export default {
 <style>
 .app-content {
   min-height: calc(100vh - var(--header-height));
+  width: 100%;
   max-width: var(--content-max-width);
   margin: var(--spacing-size-1);
   /* overflow: hidden; */
